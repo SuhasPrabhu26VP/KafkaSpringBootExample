@@ -33,11 +33,6 @@ public class KafkaConsumerConfig {
     @Value("${kafka.schemaRegistryAddress}")
     private String schemaRegistryAddress;
 
-    @Value("${kafka.sasl-username}")
-    private String saslUsername;
-
-    @Value("${kafka.sasl-password}")
-    private String saslPassword;
 
     @Bean
     public ConsumerFactory<String, schema.avro.User> userConsumerFactory() {
@@ -104,13 +99,8 @@ public class KafkaConsumerConfig {
         Map<String, Object> props = new HashMap<>();
 
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerAddress);
-
-        props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
-        props.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
-        props.put(SaslConfigs.SASL_JAAS_CONFIG, String.format(
-                "%s required username=\"" + saslUsername + "\" password=\"" + saslPassword + "\";", PlainLoginModule.class.getName(), "username", "password"
-        ));
-
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
 

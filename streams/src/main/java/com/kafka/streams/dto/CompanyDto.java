@@ -8,18 +8,11 @@ public class CompanyDto {
     private String address;
     private int employeeCount;
     private boolean softwareCompany;
-
-    // --- key field (matches UserDto.companyId — used in joins) ---
-    private String companyId;    // unique identifier — becomes the KTable key
-
+    private String companyId;
     // --- routing/filtering fields ---
-    private String industry;     // "TECH", "FINANCE", "HEALTH" — for branch routing
-    private String country;      // "IN", "US", "UK" — for regional filtering
-
-    // --- aggregation fields ---
-    private double revenue;      // can be aggregated per industry
-
-    // --- time field ---
-    private long updatedAt;      // epoch millis
+    private String industry;     // "TECH", "FINANCE", "HEALTH"
+    private String country;      // "IN", "US", "UK"
+    private double revenue;
+    private long updatedAt;
 
 }

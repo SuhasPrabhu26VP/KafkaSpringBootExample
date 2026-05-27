@@ -27,11 +27,7 @@ public class KafkaProducerConfig {
     @Value("${kafka.schemaRegistryAddress}")
     private String schemaRegistryAddress;
 
-    @Value("${kafka.sasl-username}")
-    private String saslUsername;
 
-    @Value("${kafka.sasl-password}")
-    private String saslPassword;
 
     @Bean
     public ProducerFactory<String, schema.avro.User> userProducerFactory() {
@@ -82,15 +78,7 @@ public class KafkaProducerConfig {
 
     private Map<String, Object> createDefaultProps() {
         Map<String, Object> props = new HashMap<>();
-
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerAddress);
-
-        props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
-        props.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
-        props.put(SaslConfigs.SASL_JAAS_CONFIG, String.format(
-                "%s required username=\"" + saslUsername + "\" password=\"" + saslPassword + "\";", PlainLoginModule.class.getName(), "username", "password"
-        ));
-
         return props;
     }
 }

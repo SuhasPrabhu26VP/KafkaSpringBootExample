@@ -5,28 +5,40 @@
  */
 package schema.avro;
 
+import org.apache.avro.generic.GenericArray;
 import org.apache.avro.specific.SpecificData;
+import org.apache.avro.util.Utf8;
 import org.apache.avro.message.BinaryMessageEncoder;
 import org.apache.avro.message.BinaryMessageDecoder;
 import org.apache.avro.message.SchemaStore;
 
-@SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class User extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = -4826468625918770178L;
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"User\",\"namespace\":\"schema.avro\",\"fields\":[{\"name\":\"name\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"Mandatory user name\"},{\"name\":\"surname\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"Mandatory user surname\"},{\"name\":\"age\",\"type\":\"int\",\"doc\":\"Optional user age\",\"default\":18},{\"name\":\"active\",\"type\":\"boolean\",\"doc\":\"Mandatory user active flag\"}]}");
+  private static final long serialVersionUID = -6107685974788224628L;
+
+
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"User\",\"namespace\":\"schema.avro\",\"fields\":[{\"name\":\"firstName\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"Mandatory firstName\"},{\"name\":\"lastName\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"Mandatory user lastName\"},{\"name\":\"age\",\"type\":\"int\",\"doc\":\"Optional user age\",\"default\":18},{\"name\":\"active\",\"type\":\"boolean\",\"doc\":\"Mandatory user active flag\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
-  private static SpecificData MODEL$ = new SpecificData();
+  private static final SpecificData MODEL$ = new SpecificData();
 
   private static final BinaryMessageEncoder<User> ENCODER =
-      new BinaryMessageEncoder<User>(MODEL$, SCHEMA$);
+      new BinaryMessageEncoder<>(MODEL$, SCHEMA$);
 
   private static final BinaryMessageDecoder<User> DECODER =
-      new BinaryMessageDecoder<User>(MODEL$, SCHEMA$);
+      new BinaryMessageDecoder<>(MODEL$, SCHEMA$);
+
+  /**
+   * Return the BinaryMessageEncoder instance used by this class.
+   * @return the message encoder used by this class
+   */
+  public static BinaryMessageEncoder<User> getEncoder() {
+    return ENCODER;
+  }
 
   /**
    * Return the BinaryMessageDecoder instance used by this class.
+   * @return the message decoder used by this class
    */
   public static BinaryMessageDecoder<User> getDecoder() {
     return DECODER;
@@ -35,30 +47,40 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
   /**
    * Create a new BinaryMessageDecoder instance for this class that uses the specified {@link SchemaStore}.
    * @param resolver a {@link SchemaStore} used to find schemas by fingerprint
+   * @return a BinaryMessageDecoder instance for this class backed by the given SchemaStore
    */
   public static BinaryMessageDecoder<User> createDecoder(SchemaStore resolver) {
-    return new BinaryMessageDecoder<User>(MODEL$, SCHEMA$, resolver);
+    return new BinaryMessageDecoder<>(MODEL$, SCHEMA$, resolver);
   }
 
-  /** Serializes this User to a ByteBuffer. */
+  /**
+   * Serializes this User to a ByteBuffer.
+   * @return a buffer holding the serialized data for this instance
+   * @throws java.io.IOException if this instance could not be serialized
+   */
   public java.nio.ByteBuffer toByteBuffer() throws java.io.IOException {
     return ENCODER.encode(this);
   }
 
-  /** Deserializes a User from a ByteBuffer. */
+  /**
+   * Deserializes a User from a ByteBuffer.
+   * @param b a byte buffer holding serialized data for an instance of this class
+   * @return a User instance decoded from the given buffer
+   * @throws java.io.IOException if the given bytes could not be deserialized into an instance of this class
+   */
   public static User fromByteBuffer(
       java.nio.ByteBuffer b) throws java.io.IOException {
     return DECODER.decode(b);
   }
 
-  /** Mandatory user name */
-  @Deprecated public java.lang.String name;
-  /** Mandatory user surname */
-  @Deprecated public java.lang.String surname;
+  /** Mandatory firstName */
+  private java.lang.String firstName;
+  /** Mandatory user lastName */
+  private java.lang.String lastName;
   /** Optional user age */
-  @Deprecated public int age;
+  private int age;
   /** Mandatory user active flag */
-  @Deprecated public boolean active;
+  private boolean active;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -69,90 +91,100 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
 
   /**
    * All-args constructor.
-   * @param name Mandatory user name
-   * @param surname Mandatory user surname
+   * @param firstName Mandatory firstName
+   * @param lastName Mandatory user lastName
    * @param age Optional user age
    * @param active Mandatory user active flag
    */
-  public User(java.lang.String name, java.lang.String surname, java.lang.Integer age, java.lang.Boolean active) {
-    this.name = name;
-    this.surname = surname;
+  public User(java.lang.String firstName, java.lang.String lastName, java.lang.Integer age, java.lang.Boolean active) {
+    this.firstName = firstName;
+    this.lastName = lastName;
     this.age = age;
     this.active = active;
   }
 
+  @Override
+  public org.apache.avro.specific.SpecificData getSpecificData() { return MODEL$; }
+
+  @Override
   public org.apache.avro.Schema getSchema() { return SCHEMA$; }
+
   // Used by DatumWriter.  Applications should not call.
+  @Override
   public java.lang.Object get(int field$) {
     switch (field$) {
-    case 0: return name;
-    case 1: return surname;
+    case 0: return firstName;
+    case 1: return lastName;
     case 2: return age;
     case 3: return active;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
+    default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
 
   // Used by DatumReader.  Applications should not call.
+  @Override
   @SuppressWarnings(value="unchecked")
   public void put(int field$, java.lang.Object value$) {
     switch (field$) {
-    case 0: name = (java.lang.String)value$; break;
-    case 1: surname = (java.lang.String)value$; break;
+    case 0: firstName = value$ != null ? value$.toString() : null; break;
+    case 1: lastName = value$ != null ? value$.toString() : null; break;
     case 2: age = (java.lang.Integer)value$; break;
     case 3: active = (java.lang.Boolean)value$; break;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
+    default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
 
   /**
-   * Gets the value of the 'name' field.
-   * @return Mandatory user name
+   * Gets the value of the 'firstName' field.
+   * @return Mandatory firstName
    */
-  public java.lang.String getName() {
-    return name;
+  public java.lang.String getFirstName() {
+    return firstName;
   }
 
+
   /**
-   * Sets the value of the 'name' field.
-   * Mandatory user name
+   * Sets the value of the 'firstName' field.
+   * Mandatory firstName
    * @param value the value to set.
    */
-  public void setName(java.lang.String value) {
-    this.name = value;
+  public void setFirstName(java.lang.String value) {
+    this.firstName = value;
   }
 
   /**
-   * Gets the value of the 'surname' field.
-   * @return Mandatory user surname
+   * Gets the value of the 'lastName' field.
+   * @return Mandatory user lastName
    */
-  public java.lang.String getSurname() {
-    return surname;
+  public java.lang.String getLastName() {
+    return lastName;
   }
 
+
   /**
-   * Sets the value of the 'surname' field.
-   * Mandatory user surname
+   * Sets the value of the 'lastName' field.
+   * Mandatory user lastName
    * @param value the value to set.
    */
-  public void setSurname(java.lang.String value) {
-    this.surname = value;
+  public void setLastName(java.lang.String value) {
+    this.lastName = value;
   }
 
   /**
    * Gets the value of the 'age' field.
    * @return Optional user age
    */
-  public java.lang.Integer getAge() {
+  public int getAge() {
     return age;
   }
+
 
   /**
    * Sets the value of the 'age' field.
    * Optional user age
    * @param value the value to set.
    */
-  public void setAge(java.lang.Integer value) {
+  public void setAge(int value) {
     this.age = value;
   }
 
@@ -160,16 +192,17 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
    * Gets the value of the 'active' field.
    * @return Mandatory user active flag
    */
-  public java.lang.Boolean getActive() {
+  public boolean getActive() {
     return active;
   }
+
 
   /**
    * Sets the value of the 'active' field.
    * Mandatory user active flag
    * @param value the value to set.
    */
-  public void setActive(java.lang.Boolean value) {
+  public void setActive(boolean value) {
     this.active = value;
   }
 
@@ -187,7 +220,11 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
    * @return A new User RecordBuilder
    */
   public static schema.avro.User.Builder newBuilder(schema.avro.User.Builder other) {
-    return new schema.avro.User.Builder(other);
+    if (other == null) {
+      return new schema.avro.User.Builder();
+    } else {
+      return new schema.avro.User.Builder(other);
+    }
   }
 
   /**
@@ -196,19 +233,24 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
    * @return A new User RecordBuilder
    */
   public static schema.avro.User.Builder newBuilder(schema.avro.User other) {
-    return new schema.avro.User.Builder(other);
+    if (other == null) {
+      return new schema.avro.User.Builder();
+    } else {
+      return new schema.avro.User.Builder(other);
+    }
   }
 
   /**
    * RecordBuilder for User instances.
    */
+  @org.apache.avro.specific.AvroGenerated
   public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<User>
     implements org.apache.avro.data.RecordBuilder<User> {
 
-    /** Mandatory user name */
-    private java.lang.String name;
-    /** Mandatory user surname */
-    private java.lang.String surname;
+    /** Mandatory firstName */
+    private java.lang.String firstName;
+    /** Mandatory user lastName */
+    private java.lang.String lastName;
     /** Optional user age */
     private int age;
     /** Mandatory user active flag */
@@ -216,7 +258,7 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
 
     /** Creates a new Builder */
     private Builder() {
-      super(SCHEMA$);
+      super(SCHEMA$, MODEL$);
     }
 
     /**
@@ -225,21 +267,21 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
      */
     private Builder(schema.avro.User.Builder other) {
       super(other);
-      if (isValidValue(fields()[0], other.name)) {
-        this.name = data().deepCopy(fields()[0].schema(), other.name);
-        fieldSetFlags()[0] = true;
+      if (isValidValue(fields()[0], other.firstName)) {
+        this.firstName = data().deepCopy(fields()[0].schema(), other.firstName);
+        fieldSetFlags()[0] = other.fieldSetFlags()[0];
       }
-      if (isValidValue(fields()[1], other.surname)) {
-        this.surname = data().deepCopy(fields()[1].schema(), other.surname);
-        fieldSetFlags()[1] = true;
+      if (isValidValue(fields()[1], other.lastName)) {
+        this.lastName = data().deepCopy(fields()[1].schema(), other.lastName);
+        fieldSetFlags()[1] = other.fieldSetFlags()[1];
       }
       if (isValidValue(fields()[2], other.age)) {
         this.age = data().deepCopy(fields()[2].schema(), other.age);
-        fieldSetFlags()[2] = true;
+        fieldSetFlags()[2] = other.fieldSetFlags()[2];
       }
       if (isValidValue(fields()[3], other.active)) {
         this.active = data().deepCopy(fields()[3].schema(), other.active);
-        fieldSetFlags()[3] = true;
+        fieldSetFlags()[3] = other.fieldSetFlags()[3];
       }
     }
 
@@ -248,13 +290,13 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
      * @param other The existing instance to copy.
      */
     private Builder(schema.avro.User other) {
-            super(SCHEMA$);
-      if (isValidValue(fields()[0], other.name)) {
-        this.name = data().deepCopy(fields()[0].schema(), other.name);
+      super(SCHEMA$, MODEL$);
+      if (isValidValue(fields()[0], other.firstName)) {
+        this.firstName = data().deepCopy(fields()[0].schema(), other.firstName);
         fieldSetFlags()[0] = true;
       }
-      if (isValidValue(fields()[1], other.surname)) {
-        this.surname = data().deepCopy(fields()[1].schema(), other.surname);
+      if (isValidValue(fields()[1], other.lastName)) {
+        this.lastName = data().deepCopy(fields()[1].schema(), other.lastName);
         fieldSetFlags()[1] = true;
       }
       if (isValidValue(fields()[2], other.age)) {
@@ -268,87 +310,89 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
     }
 
     /**
-      * Gets the value of the 'name' field.
-      * Mandatory user name
+      * Gets the value of the 'firstName' field.
+      * Mandatory firstName
       * @return The value.
       */
-    public java.lang.String getName() {
-      return name;
+    public java.lang.String getFirstName() {
+      return firstName;
     }
 
+
     /**
-      * Sets the value of the 'name' field.
-      * Mandatory user name
-      * @param value The value of 'name'.
+      * Sets the value of the 'firstName' field.
+      * Mandatory firstName
+      * @param value The value of 'firstName'.
       * @return This builder.
       */
-    public schema.avro.User.Builder setName(java.lang.String value) {
+    public schema.avro.User.Builder setFirstName(java.lang.String value) {
       validate(fields()[0], value);
-      this.name = value;
+      this.firstName = value;
       fieldSetFlags()[0] = true;
       return this;
     }
 
     /**
-      * Checks whether the 'name' field has been set.
-      * Mandatory user name
-      * @return True if the 'name' field has been set, false otherwise.
+      * Checks whether the 'firstName' field has been set.
+      * Mandatory firstName
+      * @return True if the 'firstName' field has been set, false otherwise.
       */
-    public boolean hasName() {
+    public boolean hasFirstName() {
       return fieldSetFlags()[0];
     }
 
 
     /**
-      * Clears the value of the 'name' field.
-      * Mandatory user name
+      * Clears the value of the 'firstName' field.
+      * Mandatory firstName
       * @return This builder.
       */
-    public schema.avro.User.Builder clearName() {
-      name = null;
+    public schema.avro.User.Builder clearFirstName() {
+      firstName = null;
       fieldSetFlags()[0] = false;
       return this;
     }
 
     /**
-      * Gets the value of the 'surname' field.
-      * Mandatory user surname
+      * Gets the value of the 'lastName' field.
+      * Mandatory user lastName
       * @return The value.
       */
-    public java.lang.String getSurname() {
-      return surname;
+    public java.lang.String getLastName() {
+      return lastName;
     }
 
+
     /**
-      * Sets the value of the 'surname' field.
-      * Mandatory user surname
-      * @param value The value of 'surname'.
+      * Sets the value of the 'lastName' field.
+      * Mandatory user lastName
+      * @param value The value of 'lastName'.
       * @return This builder.
       */
-    public schema.avro.User.Builder setSurname(java.lang.String value) {
+    public schema.avro.User.Builder setLastName(java.lang.String value) {
       validate(fields()[1], value);
-      this.surname = value;
+      this.lastName = value;
       fieldSetFlags()[1] = true;
       return this;
     }
 
     /**
-      * Checks whether the 'surname' field has been set.
-      * Mandatory user surname
-      * @return True if the 'surname' field has been set, false otherwise.
+      * Checks whether the 'lastName' field has been set.
+      * Mandatory user lastName
+      * @return True if the 'lastName' field has been set, false otherwise.
       */
-    public boolean hasSurname() {
+    public boolean hasLastName() {
       return fieldSetFlags()[1];
     }
 
 
     /**
-      * Clears the value of the 'surname' field.
-      * Mandatory user surname
+      * Clears the value of the 'lastName' field.
+      * Mandatory user lastName
       * @return This builder.
       */
-    public schema.avro.User.Builder clearSurname() {
-      surname = null;
+    public schema.avro.User.Builder clearLastName() {
+      lastName = null;
       fieldSetFlags()[1] = false;
       return this;
     }
@@ -358,9 +402,10 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
       * Optional user age
       * @return The value.
       */
-    public java.lang.Integer getAge() {
+    public int getAge() {
       return age;
     }
+
 
     /**
       * Sets the value of the 'age' field.
@@ -400,9 +445,10 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
       * Mandatory user active flag
       * @return The value.
       */
-    public java.lang.Boolean getActive() {
+    public boolean getActive() {
       return active;
     }
+
 
     /**
       * Sets the value of the 'active' field.
@@ -442,11 +488,13 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
     public User build() {
       try {
         User record = new User();
-        record.name = fieldSetFlags()[0] ? this.name : (java.lang.String) defaultValue(fields()[0]);
-        record.surname = fieldSetFlags()[1] ? this.surname : (java.lang.String) defaultValue(fields()[1]);
+        record.firstName = fieldSetFlags()[0] ? this.firstName : (java.lang.String) defaultValue(fields()[0]);
+        record.lastName = fieldSetFlags()[1] ? this.lastName : (java.lang.String) defaultValue(fields()[1]);
         record.age = fieldSetFlags()[2] ? this.age : (java.lang.Integer) defaultValue(fields()[2]);
         record.active = fieldSetFlags()[3] ? this.active : (java.lang.Boolean) defaultValue(fields()[3]);
         return record;
+      } catch (org.apache.avro.AvroMissingFieldException e) {
+        throw e;
       } catch (java.lang.Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);
       }
@@ -471,4 +519,67 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
     READER$.read(this, SpecificData.getDecoder(in));
   }
 
+  @Override protected boolean hasCustomCoders() { return true; }
+
+  @Override public void customEncode(org.apache.avro.io.Encoder out)
+    throws java.io.IOException
+  {
+    out.writeString(this.firstName);
+
+    out.writeString(this.lastName);
+
+    out.writeInt(this.age);
+
+    out.writeBoolean(this.active);
+
+  }
+
+  @Override public void customDecode(org.apache.avro.io.ResolvingDecoder in)
+    throws java.io.IOException
+  {
+    org.apache.avro.Schema.Field[] fieldOrder = in.readFieldOrderIfDiff();
+    if (fieldOrder == null) {
+      this.firstName = in.readString();
+
+      this.lastName = in.readString();
+
+      this.age = in.readInt();
+
+      this.active = in.readBoolean();
+
+    } else {
+      for (int i = 0; i < 4; i++) {
+        switch (fieldOrder[i].pos()) {
+        case 0:
+          this.firstName = in.readString();
+          break;
+
+        case 1:
+          this.lastName = in.readString();
+          break;
+
+        case 2:
+          this.age = in.readInt();
+          break;
+
+        case 3:
+          this.active = in.readBoolean();
+          break;
+
+        default:
+          throw new java.io.IOException("Corrupt ResolvingDecoder.");
+        }
+      }
+    }
+  }
 }
+
+
+
+
+
+
+
+
+
+

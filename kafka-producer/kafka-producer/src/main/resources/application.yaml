@@ -3,13 +3,11 @@ spring:
     name: kafka-producer
 
 server:
-  port: 8080
+  port: 8081
 
 kafka:
-  brokerAddress: localhost:9093
-  schemaRegistryAddress: http://localhost:8081
-  sasl-username: your_sasl_username
-  sasl-password: your_sasl_password
+  brokerAddress: localhost:9092
+  schemaRegistryAddress: http://localhost:8083
   topics:
     user:
       name: user-topic

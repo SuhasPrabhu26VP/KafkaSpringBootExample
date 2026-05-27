@@ -1,6 +1,6 @@
 package com.kafka.streams.topology;
 
-import com.kafka.streams.dto.CompanyDto;
+import com.kafka.streams.dto.CompanyStats;
 import com.kafka.streams.dto.UserDto;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -13,36 +13,47 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserCompanyAggregationTopology {
+
+    public static final String COMPANY_STATS_STORE = "company-stats-store";
+
+
     @Autowired
     void buildAggregation(StreamsBuilder streamsBuilder) {
-        JacksonJsonSerde<UserDto> userSerder = new JacksonJsonSerde<>(UserDto.class);
-        JacksonJsonSerde<CompanyDto> companySerde = new JacksonJsonSerde<>(CompanyDto.class);
-
-        // Read orders and group by customer ID
-        KTable<String, CompanyDto> customerStats = streamsBuilder
-                .stream("orders", Consumed.with(Serdes.String(), userSerder))
-                // Re-key by customer ID for aggregation
-                .selectKey((key, user) -> user.getCompany())
-                // Group by the new key
-                .groupByKey(Grouped.with(Serdes.String(), userSerder))
-                // Aggregate into customer statistics
+        JacksonJsonSerde<UserDto> userSerde = new JacksonJsonSerde<>(UserDto.class);
+        JacksonJsonSerde<CompanyStats> companySerde = new JacksonJsonSerde<>(CompanyStats.class);
+        KTable<String, CompanyStats> companyStats = streamsBuilder
+                .stream("users", Consumed.with(Serdes.String(), userSerde))
+                .selectKey((key, user) -> user.getCompanyId())
+                .groupByKey(Grouped.with(Serdes.String(), userSerde))
                 .aggregate(
-                        // Initializer - creates empty stats for new customers
-                        CompanyDto::new,
-                        // Aggregator - updates stats with each order
-                        (customerId, user, comp) -> {
-                            comp.setId(customerId);
-                            comp.setName(user.getFirstName());
-                            return comp;
+                        CompanyStats::new,
+                        (companyId, user, stats) -> {
+                            stats.setCompanyId(companyId);
+                            stats.setHeadcount(stats.getHeadcount() + 1);
+                            stats.setTotalSalary(stats.getTotalSalary() + user.getSalary());
+                            stats.setAverageSalary(stats.getTotalSalary() / stats.getHeadcount());
+                            if ("ACTIVE".equalsIgnoreCase(user.getStatus())) {
+                                stats.setActiveCount(stats.getActiveCount() + 1);
+                            } else {
+                                stats.setInactiveCount(stats.getInactiveCount() + 1);
+                            }
+                            switch (user.getDepartment() == null ? "" : user.getDepartment().toUpperCase()) {
+                                case "ENGINEERING" -> stats.setEngineeringCount(stats.getEngineeringCount() + 1);
+                                case "HR"          -> stats.setHrCount(stats.getHrCount() + 1);
+                                case "SALES"       -> stats.setSalesCount(stats.getSalesCount() + 1);
+                                case "FINANCE"     -> stats.setFinanceCount(stats.getFinanceCount() + 1);
+                            }
+                            stats.setLastUpdatedAt(System.currentTimeMillis());
+
+                            return stats;
                         },
-                        // Materialized view configuration
-                        Materialized.<String, CompanyDto, KeyValueStore<Bytes, byte[]>>as("customer-stats-store")
+                        Materialized.<String, CompanyStats, KeyValueStore<Bytes, byte[]>>
+                                        as(COMPANY_STATS_STORE)
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(companySerde)
                 );
-
-        // Output the aggregated stats to a topic
-        customerStats.toStream().to("customer-statistics",
-                Produced.with(Serdes.String(), companySerde));
+        companyStats
+                .toStream()
+                .to("company-statistics", Produced.with(Serdes.String(), companySerde));
     }
 }

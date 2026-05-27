@@ -21,22 +21,21 @@ public class KafkaStreamsConfig {
     @Value("${spring.kafka.streams.application-id}")
     private String applicationId;
 
+    @Value("${kafka.schemaRegistryAddress}")
+    private String schemaRegistryAddress;
+
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     public KafkaStreamsConfiguration kafkaStreamsConfig() {
         Map<String, Object> props = new HashMap<>();
-
-        // Required configuration
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationId);
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-
-        // Serialization defaults - Strings for keys, JSON for values
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-
-        // Production settings
+        props.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
         props.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, "exactly_once_v2");
-        props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, 3);
-
+        props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, 1);
+        props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1000);
+        // no SASL needed for local
         return new KafkaStreamsConfiguration(props);
     }
 }

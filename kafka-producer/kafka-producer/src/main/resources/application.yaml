@@ -2,12 +2,18 @@ spring:
   application:
     name: kafka-producer
 
-  kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        spring.json.add.type.headers: false
 server:
-  port: 8081
+  port: 8080
+
+kafka:
+  brokerAddress: localhost:9093
+  schemaRegistryAddress: http://localhost:8081
+  sasl-username: your_sasl_username
+  sasl-password: your_sasl_password
+  topics:
+    user:
+      name: user-topic
+    company:
+      name: company-topic
+    message:
+      name: message-topic

@@ -1,8 +1,8 @@
 package com.message_broker.kafka_producer.config;
 
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.message_broker.kafka_producer.dto.CompanyData;
-import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
+
+import com.message_broker.kafka_producer.dto.CompanyDto;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +35,7 @@ public class KafkaProducerConfig {
     public ProducerFactory<String, schema.avro.User> userProducerFactory() {
         Map<String, Object> props = createDefaultProps();
 
-        props.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
+        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
 
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
@@ -47,18 +49,18 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public ProducerFactory<String, CompanyData> companyProducerFactory() {
+    public ProducerFactory<String, CompanyDto> companyProducerFactory() {
         Map<String, Object> props = createDefaultProps();
 
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JacksonJsonSerializer.class);
 
         return new DefaultKafkaProducerFactory<>(props);
     }
 
     @Bean
-    public KafkaTemplate<String, CompanyData> companyKafkaTemplate() {
-        return new KafkaTemplate<String, CompanyData>(companyProducerFactory());
+    public KafkaTemplate<String, CompanyDto> companyKafkaTemplate() {
+        return new KafkaTemplate<String, CompanyDto>(companyProducerFactory());
     }
 
     @Bean

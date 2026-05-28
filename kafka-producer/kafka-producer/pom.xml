@@ -44,13 +44,14 @@
 	</pluginRepositories>
 
 	<dependencies>
+		<!-- Spring Kafka for integration -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-kafka</artifactId>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webmvc</artifactId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
 		<dependency>
@@ -91,8 +92,14 @@
 		</dependency>
 		<dependency>
 			<groupId>io.confluent</groupId>
+			<artifactId>kafka-schema-serializer</artifactId>
+			<version>8.2.0</version> <!-- Use the latest available version -->
+		</dependency>
+		<dependency>
+			<groupId>io.confluent</groupId>
 			<artifactId>kafka-avro-serializer</artifactId>
-			<version>5.3.0</version>
+			<version>8.2.0</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 
@@ -114,7 +121,7 @@
 						</goals>
 						<configuration>
 							<sourceDirectory>${project.basedir}/src/main/java/com/message_broker/kafka_producer/avro</sourceDirectory>
-							<outputDirectory>${project.basedir}src/main/java/com/message_broker/kafka_producer/dto</outputDirectory>
+							<outputDirectory>${project.basedir}/src/main/java/com/message_broker/kafka_producer/dto</outputDirectory>
 							<stringType>String</stringType>
 						</configuration>
 					</execution>

@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.support.serializer.JacksonJsonSerde;
 import tools.jackson.databind.json.JsonMapper;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserProcessingTopology {
     private static final Logger log = LoggerFactory.getLogger(UserProcessingTopology.class);
     private final JsonMapper objectMapper;

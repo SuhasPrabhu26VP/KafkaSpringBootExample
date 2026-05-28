@@ -8,6 +8,7 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.support.serializer.JacksonJsonSerde;
 import org.springframework.stereotype.Component;
 
@@ -15,14 +16,15 @@ import org.springframework.stereotype.Component;
 public class UserCompanyAggregationTopology {
 
     public static final String COMPANY_STATS_STORE = "company-stats-store";
-
+    @Value("${spring.kafka.topics.user.name}")
+    private String userTopicName;
 
     @Autowired
     void buildAggregation(StreamsBuilder streamsBuilder) {
         JacksonJsonSerde<UserDto> userSerde = new JacksonJsonSerde<>(UserDto.class);
         JacksonJsonSerde<CompanyStats> companySerde = new JacksonJsonSerde<>(CompanyStats.class);
         KTable<String, CompanyStats> companyStats = streamsBuilder
-                .stream("users", Consumed.with(Serdes.String(), userSerde))
+                .stream(userTopicName, Consumed.with(Serdes.String(), userSerde))
                 .selectKey((key, user) -> user.getCompanyId())
                 .groupByKey(Grouped.with(Serdes.String(), userSerde))
                 .aggregate(

@@ -1,5 +1,6 @@
 package com.kafka.streams.config;
 
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +22,7 @@ public class KafkaStreamsConfig {
     @Value("${spring.kafka.streams.application-id}")
     private String applicationId;
 
-    @Value("${kafka.schemaRegistryAddress}")
+    @Value("${spring.kafka.streams.schemaRegistryAddress}")
     private String schemaRegistryAddress;
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
@@ -31,9 +32,9 @@ public class KafkaStreamsConfig {
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-        props.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
+        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
         props.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, "exactly_once_v2");
-        props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, 1);
+        props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, 3);
         props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1000);
         // no SASL needed for local
         return new KafkaStreamsConfiguration(props);

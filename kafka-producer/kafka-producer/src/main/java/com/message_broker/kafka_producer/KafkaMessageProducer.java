@@ -1,6 +1,6 @@
 package com.message_broker.kafka_producer;
 
-import com.message_broker.kafka_producer.dto.CompanyData;
+import com.message_broker.kafka_producer.dto.CompanyDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +22,7 @@ public class KafkaMessageProducer {
     private String messageIdTopicName;
 
     private final KafkaTemplate<String, schema.avro.User> userKafkaTemplate;
-    private final KafkaTemplate<String, CompanyData> companyKafkaTemplate;
+    private final KafkaTemplate<String, CompanyDto> companyKafkaTemplate;
     private final KafkaTemplate<String, String> messageIdKafkaTemplate;
 
     public void produceUser(schema.avro.User user) {
@@ -30,8 +30,8 @@ public class KafkaMessageProducer {
         userKafkaTemplate.send(producerRecord);
     }
 
-    public void produceCompany(CompanyData company) {
-        ProducerRecord<String, CompanyData> producerRecord = new ProducerRecord<>(companyTopicName, company);
+    public void produceCompany(CompanyDto company) {
+        ProducerRecord<String, CompanyDto> producerRecord = new ProducerRecord<>(companyTopicName, company);
         companyKafkaTemplate.send(producerRecord);
     }
 

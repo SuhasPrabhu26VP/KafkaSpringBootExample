@@ -1,13 +1,13 @@
 package com.message_broker.kafka_producer;
 
-import com.message_broker.kafka_producer.dto.CompanyDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class KafkaMessageProducer {
@@ -25,17 +25,41 @@ public class KafkaMessageProducer {
     private final KafkaTemplate<String, String> messageIdKafkaTemplate;
 
     public void produceUser(schema.avro.AvroUser user) {
-        ProducerRecord<String, schema.avro.AvroUser> producerRecord = new ProducerRecord<>(userTopicName, user);
-        userKafkaTemplate.send(producerRecord);
+        ProducerRecord<String, schema.avro.AvroUser> producerRecord =
+                new ProducerRecord<>(userTopicName, user.getUserId(), user);
+        userKafkaTemplate.send(producerRecord)
+                .thenAccept(result ->
+                        log.info("User sent: {} to partition: {}",
+                                user.getUserId(), result.getRecordMetadata().partition()))
+                .exceptionally(ex -> {
+                    log.error("Failed to send user: {}", user.getUserId(), ex);
+                    return null;
+                });
     }
 
     public void produceCompany(schema.avro.AvroCompany company) {
-        ProducerRecord<String, schema.avro.AvroCompany> producerRecord = new ProducerRecord<>(companyTopicName, company);
-        companyKafkaTemplate.send(producerRecord);
+        ProducerRecord<String, schema.avro.AvroCompany> producerRecord =
+                new ProducerRecord<>(companyTopicName, company.getCompanyId(), company);
+        companyKafkaTemplate.send(producerRecord)
+                .thenAccept(result ->
+                        log.info("Company sent: {} to partition: {}",
+                                company.getCompanyId(), result.getRecordMetadata().partition()))
+                .exceptionally(ex -> {
+                    log.error("Failed to send company: {}", company.getCompanyId(), ex);
+                    return null;
+                });
     }
 
     public void produceMessageId(String messageId) {
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(messageIdTopicName, messageId);
-        messageIdKafkaTemplate.send(producerRecord);
+        ProducerRecord<String, String> producerRecord =
+                new ProducerRecord<>(messageIdTopicName, messageId, messageId);
+        messageIdKafkaTemplate.send(producerRecord)
+                .thenAccept(result ->
+                        log.info("Message ID sent: {} to partition: {}",
+                                messageId, result.getRecordMetadata().partition()))
+                .exceptionally(ex -> {
+                    log.error("Failed to send message ID: {}", messageId, ex);
+                    return null;
+                });
     }
 }

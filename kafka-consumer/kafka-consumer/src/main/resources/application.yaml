@@ -6,8 +6,8 @@ server:
   port: 8084
 
 kafka:
-  brokerAddress: localhost:9092
-  schemaRegistryAddress: http://localhost:8083
+  brokerAddress: localhost:9092,localhost:9094,localhost:9096
+  schemaRegistryAddress: http://localhost:8081
   topics:
     user:
       name: user-topic

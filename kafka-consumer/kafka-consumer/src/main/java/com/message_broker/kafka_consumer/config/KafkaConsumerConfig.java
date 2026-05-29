@@ -1,11 +1,8 @@
 package com.message_broker.kafka_consumer.config;
 
-import com.message_broker.kafka_consumer.dto.CompanyDto;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
-import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
-import io.confluent.kafka.serializers.subject.RecordNameStrategy;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,20 +26,23 @@ public class KafkaConsumerConfig {
     @Value("${kafka.schemaRegistryAddress}")
     private String schemaRegistryAddress;
 
+    @Value("${kafka.topics.user.group}")
+    private String userGroupId;
+
+    @Value("${kafka.topics.company.group}")
+    private String companyGroupId;
+
+    @Value("${kafka.topics.company.message}")
+    private String msgGroupId;
 
     @Bean
     public ConsumerFactory<String, schema.avro.AvroUser> userConsumerFactory() {
         Map<String, Object> props = createDefaultProps();
-
         props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
-
         props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, StringDeserializer.class);
         props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, KafkaAvroDeserializer.class);
-
         props.put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, true);
-
-        props.put(AbstractKafkaSchemaSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY, RecordNameStrategy.class.getName());
-
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, userGroupId);
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
@@ -56,13 +56,11 @@ public class KafkaConsumerConfig {
     @Bean
     public ConsumerFactory<String, schema.avro.AvroCompany> companyConsumerFactory() {
         Map<String, Object> props = createDefaultProps();
-
+        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
         props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, StringDeserializer.class);
-        props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JacksonJsonDeserializer.class);
-
-        props.put(JacksonJsonDeserializer.VALUE_DEFAULT_TYPE, CompanyDto.class);
-        props.put(JacksonJsonDeserializer.TRUSTED_PACKAGES, "*");
-
+        props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, KafkaAvroDeserializer.class);
+        props.put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, true);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, companyGroupId);
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
@@ -79,7 +77,7 @@ public class KafkaConsumerConfig {
 
         props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, StringDeserializer.class);
         props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, StringDeserializer.class);
-
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, msgGroupId);
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
@@ -99,7 +97,7 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
 
-        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
 
         return props;
     }

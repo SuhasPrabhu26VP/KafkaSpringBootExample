@@ -3,11 +3,11 @@ spring:
     name: kafka-producer
 
 server:
-  port: 8081
+  port: 8083
 
 kafka:
-  brokerAddress: localhost:9092
-  schemaRegistryAddress: http://localhost:8083
+  brokerAddress: localhost:9092,localhost:9094,localhost:9096
+  schemaRegistryAddress: http://localhost:8081
   topics:
     user:
       name: user-topic

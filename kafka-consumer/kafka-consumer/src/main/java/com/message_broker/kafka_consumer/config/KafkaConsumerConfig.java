@@ -32,7 +32,7 @@ public class KafkaConsumerConfig {
     @Value("${kafka.topics.company.group}")
     private String companyGroupId;
 
-    @Value("${kafka.topics.company.message}")
+    @Value("${kafka.topics.message.group}")
     private String msgGroupId;
 
     @Bean

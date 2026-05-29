@@ -5,6 +5,11 @@ spring:
 server:
   port: 8084
 
+logging:
+  level:
+    org.springframework.kafka: DEBUG
+    org.apache.kafka.clients.consumer: DEBUG
+
 kafka:
   brokerAddress: localhost:9092,localhost:9094,localhost:9096
   schemaRegistryAddress: http://localhost:8081

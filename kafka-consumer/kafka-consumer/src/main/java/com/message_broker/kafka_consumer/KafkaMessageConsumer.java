@@ -24,6 +24,10 @@ public class KafkaMessageConsumer {
             containerFactory = "companyKafkaListenerFactory")
     public void consumeCompany(ConsumerRecord<String, schema.avro.AvroCompany> record) {
         schema.avro.AvroCompany company = record.value();
+        if ("ABC".equals(company.getCompanyId())) {
+            throw new RuntimeException("Error for company id: " + company.getCompanyId());
+        }
+
         log.info("Company received: {} | Partition: {} | Offset: {}",
                 company.getName(), record.partition(), record.offset());
     }

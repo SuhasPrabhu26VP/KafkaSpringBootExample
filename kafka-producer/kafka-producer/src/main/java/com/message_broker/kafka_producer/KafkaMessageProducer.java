@@ -6,7 +6,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import schema.avro.User;
 
 
 @RequiredArgsConstructor
@@ -21,17 +20,17 @@ public class KafkaMessageProducer {
     @Value("${kafka.topics.message.name}")
     private String messageIdTopicName;
 
-    private final KafkaTemplate<String, schema.avro.User> userKafkaTemplate;
-    private final KafkaTemplate<String, CompanyDto> companyKafkaTemplate;
+    private final KafkaTemplate<String, schema.avro.AvroUser> userKafkaTemplate;
+    private final KafkaTemplate<String, schema.avro.AvroCompany> companyKafkaTemplate;
     private final KafkaTemplate<String, String> messageIdKafkaTemplate;
 
-    public void produceUser(schema.avro.User user) {
-        ProducerRecord<String, User> producerRecord = new ProducerRecord<>(userTopicName, user);
+    public void produceUser(schema.avro.AvroUser user) {
+        ProducerRecord<String, schema.avro.AvroUser> producerRecord = new ProducerRecord<>(userTopicName, user);
         userKafkaTemplate.send(producerRecord);
     }
 
-    public void produceCompany(CompanyDto company) {
-        ProducerRecord<String, CompanyDto> producerRecord = new ProducerRecord<>(companyTopicName, company);
+    public void produceCompany(schema.avro.AvroCompany company) {
+        ProducerRecord<String, schema.avro.AvroCompany> producerRecord = new ProducerRecord<>(companyTopicName, company);
         companyKafkaTemplate.send(producerRecord);
     }
 

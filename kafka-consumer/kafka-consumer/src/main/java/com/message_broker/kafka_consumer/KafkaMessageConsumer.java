@@ -1,6 +1,5 @@
 package com.message_broker.kafka_consumer;
 
-import com.message_broker.kafka_consumer.dto.UserDetail;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 

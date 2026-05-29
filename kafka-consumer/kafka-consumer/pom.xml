@@ -105,7 +105,7 @@
 							<goal>schema</goal>
 						</goals>
 						<configuration>
-							<sourceDirectory>${project.basedir}/src/main/java/com/message_broker/kafka_consumer/avro</sourceDirectory>
+							<sourceDirectory>${project.basedir}/src/main/resources/avro</sourceDirectory>
 							<outputDirectory>${project.basedir}/src/main/java/com/message_broker/kafka_consumer/dto</outputDirectory>
 							<stringType>String</stringType>
 						</configuration>

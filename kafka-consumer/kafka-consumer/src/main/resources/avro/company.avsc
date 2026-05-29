@@ -1,0 +1,58 @@
+{
+  "type": "record",
+  "name": "AvroCompany",
+  "namespace": "schema.avro",
+  "fields": [
+    {
+      "name": "companyId",
+      "type": "string",
+      "doc": "Required - partition key"
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "doc": "Required"
+    },
+    {
+      "name": "industry",
+      "type": {
+        "type": "enum",
+        "name": "Industry",
+        "symbols": ["TECH", "FINANCE", "HEALTH", "OTHER"]
+      },
+      "doc": "Required"
+    },
+    {
+      "name": "country",
+      "type": {
+        "type": "enum",
+        "name": "Country",
+        "symbols": ["IN", "US", "UK", "OTHER"]
+      },
+      "doc": "Required"
+    },
+    {
+      "name": "address",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Optional"
+    },
+    {
+      "name": "employeeCount",
+      "type": ["null", "int"],
+      "default": null,
+      "doc": "Optional - not all integrations provide this"
+    },
+    {
+      "name": "revenue",
+      "type": ["null", "double"],
+      "default": null,
+      "doc": "Optional"
+    },
+    {
+      "name": "updatedAt",
+      "type": "long",
+      "doc": "Required - epoch millis"
+    }
+  ]
+}

@@ -31,12 +31,12 @@ public class KafkaStreamsConfig {
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationId);
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
+                io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde.class);
         props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
         props.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, "exactly_once_v2");
         props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, 3);
         props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1000);
-        // no SASL needed for local
         return new KafkaStreamsConfiguration(props);
     }
 }

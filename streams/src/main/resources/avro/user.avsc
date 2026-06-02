@@ -1,0 +1,76 @@
+{
+  "type": "record",
+  "name": "AvroUser",
+  "namespace": "schema.avro",
+  "fields": [
+    {
+      "name": "userId",
+      "type": "string",
+      "doc": "Required - partition key"
+    },
+    {
+      "name": "companyId",
+      "type": "string",
+      "doc": "Required - links to company partition key"
+    },
+    {
+      "name": "firstName",
+      "type": "string",
+      "doc": "Required"
+    },
+    {
+      "name": "lastName",
+      "type": "string",
+      "doc": "Required"
+    },
+    {
+      "name": "status",
+      "type": {
+        "type": "enum",
+        "name": "UserStatus",
+        "symbols": ["ACTIVE", "INACTIVE", "TERMINATED", "ON_LEAVE"]
+      },
+      "doc": "Required - user employment status"
+    },
+    {
+      "name": "country",
+      "type": {
+        "type": "enum",
+        "name": "Country",
+        "symbols": ["IN", "US", "UK", "OTHER"]
+      },
+      "doc": "Required - for data locality and routing"
+    },
+    {
+      "name": "department",
+      "type": {
+        "type": "enum",
+        "name": "Department",
+        "symbols": ["ENGINEERING", "SALES", "HR", "FINANCE", "OPERATIONS", "OTHER"]
+      },
+      "doc": "Required - routing field"
+    },
+    {
+      "name": "active",
+      "type": "boolean",
+      "doc": "Required - quick filter flag"
+    },
+    {
+      "name": "createdAt",
+      "type": "long",
+      "doc": "Required - epoch millis"
+    },
+    {
+      "name": "age",
+      "type": ["null", "int"],
+      "default": null,
+      "doc": "Optional - not always available from HR systems"
+    },
+    {
+      "name": "salary",
+      "type": ["null", "double"],
+      "default": null,
+      "doc": "Optional - sensitive data, may be excluded"
+    }
+  ]
+}

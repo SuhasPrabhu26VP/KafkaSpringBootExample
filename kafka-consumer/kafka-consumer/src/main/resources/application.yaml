@@ -1,6 +1,14 @@
 spring:
   application:
     name: kafka-consumer
+  kafka:
+    admin:
+      auto-create: false  # We create topics programmatically
+    consumer:
+      enable-auto-commit: false  # Manual commit
+      auto-offset-reset: earliest
+      properties:
+        spring.json.trusted.packages: "*"
 
 server:
   port: 8084
@@ -9,6 +17,7 @@ logging:
   level:
     org.springframework.kafka: DEBUG
     org.apache.kafka.clients.consumer: DEBUG
+    com.message_broker: DEBUG
 
 kafka:
   brokerAddress: localhost:9092,localhost:9094,localhost:9096
@@ -23,3 +32,12 @@ kafka:
     message:
       name: message-topic
       group: messageTopicGroup
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always

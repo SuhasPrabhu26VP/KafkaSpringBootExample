@@ -9,14 +9,21 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.transaction.KafkaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import schema.avro.AvroCompany;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Configuration
+@EnableTransactionManagement
 public class KafkaProducerConfig {
     @Value("${kafka.brokerAddress}")
     private String brokerAddress;
@@ -34,14 +41,29 @@ public class KafkaProducerConfig {
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
         props.put(AbstractKafkaSchemaSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY,
                 RecordNameStrategy.class.getName());
-        return new DefaultKafkaProducerFactory<>(props);
+        //custom practitioner or any props should be defined first any modification factory properties will not be considered post factory initialization
+        props.put(ProducerConfig.PARTITIONER_CLASS_CONFIG,
+                "com.message_broker.kafka_producer.partitioner.DepartmentPartitioner");
+        DefaultKafkaProducerFactory<String, schema.avro.AvroUser> factory =
+                new DefaultKafkaProducerFactory<>(props);
+
+        factory.setTransactionIdPrefix("user-tx-");
+        return factory;
     }
 
     @Bean
     public KafkaTemplate<String, schema.avro.AvroUser> userKafkaTemplate() {
-        return new KafkaTemplate<String,schema.avro.AvroUser>(userProducerFactory());
+        KafkaTemplate<String, schema.avro.AvroUser> template =
+                new KafkaTemplate<>(userProducerFactory());
+        template.setTransactionIdPrefix("user-tx-");
+        return template;
     }
-
+    @Primary
+    @Bean
+    public PlatformTransactionManager userTransactionManager(
+            ProducerFactory<String, schema.avro.AvroUser> userProducerFactory) {
+        return new KafkaTransactionManager<>(userProducerFactory);
+    }
     @Bean
     public ProducerFactory<String, schema.avro.AvroCompany> companyProducerFactory() {
         Map<String, Object> props = createDefaultProps();
@@ -50,12 +72,25 @@ public class KafkaProducerConfig {
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
         props.put(AbstractKafkaSchemaSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY,
                 RecordNameStrategy.class.getName());
-        return new DefaultKafkaProducerFactory<>(props);
+        DefaultKafkaProducerFactory<String, schema.avro.AvroCompany> factory =
+                new DefaultKafkaProducerFactory<>(props);
+
+        factory.setTransactionIdPrefix("company-tx-");
+        return factory;
     }
 
     @Bean
     public KafkaTemplate<String, schema.avro.AvroCompany> companyKafkaTemplate() {
-        return new KafkaTemplate<String, schema.avro.AvroCompany>(companyProducerFactory());
+        KafkaTemplate<String, schema.avro.AvroCompany> template =
+                new KafkaTemplate<>(companyProducerFactory());
+        template.setTransactionIdPrefix("company-tx-");
+        return template;
+    }
+
+    @Bean
+    public PlatformTransactionManager companyTransactionManager(
+            ProducerFactory<String, schema.avro.AvroCompany> companyProducerFactory) {
+        return new KafkaTransactionManager<>(companyProducerFactory);
     }
 
     @Bean
@@ -65,7 +100,10 @@ public class KafkaProducerConfig {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
-        return new DefaultKafkaProducerFactory<>(props);
+        DefaultKafkaProducerFactory<String, String> factory =
+                new DefaultKafkaProducerFactory<>(props);
+        factory.setTransactionIdPrefix("message-tx-");
+        return factory;
     }
 
     @Bean

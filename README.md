@@ -36,12 +36,15 @@ POST http://localhost:8083/api/v1/company
 
 
 # Kafka Architecture and Core Concepts
+<img width="1693" height="929" alt="image" src="https://github.com/user-attachments/assets/5108d4ec-7932-4d70-8849-3c3304d481d1" />
 
 ## Overview
 
-This project demonstrates Apache Kafka core concepts with practical implementations for SAP Commerce payment processing. It includes producer and consumer applications with Avro schemas, Schema Registry, Dead Letter Queue (DLQ), and transactional support.
+This project demonstrates Apache Kafka core concepts . It includes producer and consumer applications with Avro schemas, Schema Registry, Dead Letter Queue (DLQ), and transactional support.
 
 ---
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/1c105ca8-d4fa-4265-90e4-ad591dbe90c6" />
+
 
 ## Core Concepts (18 Total)
 
@@ -49,6 +52,7 @@ This project demonstrates Apache Kafka core concepts with practical implementati
 An application that publishes events to Kafka topics, sending records to specific topics with optional keys for partitioning.
 
 **Example:** PayPal acts as producer; after collecting user credentials, it initiates the transaction and sends critical transaction details to SAP Commerce for later confirmation or authentication over time.
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/d763769a-be1f-424a-82a0-d1dbdc04c702" />
 
 ---
 
@@ -56,6 +60,7 @@ An application that publishes events to Kafka topics, sending records to specifi
 An application that reads events from Kafka topics, processing records at its own pace with control over offset commits.
 
 **Example:** SAP Commerce Order Service consumes payment events; it reads the PayPal transaction details and updates order status without rushing or blocking the customer.
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/02e456e1-a4c3-4b68-95ef-803eb64d488d" />
 
 ---
 
@@ -63,6 +68,8 @@ An application that reads events from Kafka topics, processing records at its ow
 A logical category that organises related events, similar to a database table or folder in a filesystem.
 
 **Example:** "payment-transactions" topic stores every payment event from PayPal or other payment providers.
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/e4aa9e6b-7e5d-4946-baf3-d0a993e0f3db" />
+<img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/a8a313f1-13b9-44f7-ab14-0e0b30efec6c" />
 
 ---
 
@@ -77,6 +84,8 @@ A physically ordered, immutable sequence of events within a topic that enables p
 A unique sequential ID for each event within a partition that allows consumers to track their reading position and resume from failures.
 
 **Example:** Offset 45 means SAP Commerce has successfully processed 45 PayPal transactions and will start from transaction 46 after a crash.
+<img width="1222" height="641" alt="image" src="https://github.com/user-attachments/assets/699eff52-fc82-4c07-b4ba-431d6cfaab06" />
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/cc14737f-da86-4ae0-9715-7ecc09bab6c5" />
 
 ---
 
@@ -126,6 +135,7 @@ A group of events sent together from producer to broker to improve network effic
 Rules that determine how long events are kept based on time duration or storage size limits.
 
 **Example:** Keep all payment events for 90 days for audit compliance; after that, delete oldest transactions automatically to save disk space.
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/e6c7032a-35c4-4eaf-8bd5-4e7ef0cd61e8" />
 
 ---
 
@@ -140,6 +150,7 @@ The process of reassigning partitions among consumers when a consumer joins, lea
 A special topic that stores messages which failed processing after all retry attempts are exhausted.
 
 **Example:** A transaction with expired credit card fails 3 times; it moves to DLQ where SAP Commerce admin reviews and contacts customer manually.
+<img width="1122" height="1402" alt="image" src="https://github.com/user-attachments/assets/0bb56084-4d8d-431a-af7a-c46683944214" />
 
 ---
 
@@ -147,6 +158,7 @@ A special topic that stores messages which failed processing after all retry att
 A service that manages and validates schemas to ensure compatibility between producers and consumers.
 
 **Example:** PayPal adds "currencyCode" field to transaction schema; old SAP Commerce still works because Schema Registry maintains backward compatibility.
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/cde9e9f6-fe08-45b7-96c7-eb77f77736ac" />
 
 ---
 
@@ -154,6 +166,7 @@ A service that manages and validates schemas to ensure compatibility between pro
 A user-defined strategy that determines which partition a message routes to based on business logic or message content.
 
 **Example:** Custom logic routes PayPal to partition 0, Stripe to partition 1, high-value transactions above 10,000 dollars to partition 2 for special handling.
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/21d9d357-fe11-452a-af51-859abebf6797" />
 
 ---
 
@@ -161,6 +174,7 @@ A user-defined strategy that determines which partition a message routes to base
 A producer configuration that ensures exactly-once delivery without duplicates even when retries occur.
 
 **Example:** Network failure causes PayPal to retry same transaction; idempotent producer ensures customer gets charged only once, not twice.
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/92c069a3-3cdc-4351-ba4c-190f1b692bf4" />
 
 ---
 
@@ -168,6 +182,7 @@ A producer configuration that ensures exactly-once delivery without duplicates e
 A producer that can atomically send multiple messages across partitions where all messages succeed together or fail together.
 
 **Example:** Payment success sends both "payment-confirmed" and "inventory-reserved" events; if inventory fails to reserve, payment also rolls back automatically.
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/a1f98ef9-8631-4148-91b7-058194563c4f" />
 
 ---
 

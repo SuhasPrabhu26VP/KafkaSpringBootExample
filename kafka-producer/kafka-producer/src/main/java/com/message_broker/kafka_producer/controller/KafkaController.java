@@ -20,14 +20,14 @@ public class KafkaController {
     @PostMapping("/user")
     public ResponseEntity<String> produceUserToKafka(@RequestBody UserDto user) {
         schema.avro.AvroUser userAvro = UserMapper.INSTANCE.toAvro(user);
-        producerService.produceUser(userAvro);
+        producerService.produceUserWithRelatedData(userAvro);
         return ResponseEntity.ok("OK");
     }
 
     @PostMapping("/company")
     public ResponseEntity<String> produceCompanyToKafka(@RequestBody CompanyDto company) {
         schema.avro.AvroCompany avroCompany = CompanyMapper.INSTANCE.toAvro(company);
-        producerService.produceCompany(avroCompany);
+        producerService.produceCompanyWithRelatedData(avroCompany);
         return ResponseEntity.ok("OK");
     }
 

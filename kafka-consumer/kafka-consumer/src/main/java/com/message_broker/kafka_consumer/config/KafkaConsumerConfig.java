@@ -6,6 +6,7 @@ import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.CooperativeStickyAssignor;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -50,6 +51,13 @@ public class KafkaConsumerConfig {
     private String msgGroupId;
 
     @Bean
+    public KafkaAdmin kafkaAdmin() {
+        Map<String, Object> configs = new HashMap<>();
+        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, brokerAddress);
+        return new KafkaAdmin(configs);
+    }
+
+    @Bean
     public KafkaTemplate<Object, Object> kafkaTemplate() {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerAddress);
@@ -64,12 +72,9 @@ public class KafkaConsumerConfig {
     public DeadLetterPublishingRecoverer recoverer(KafkaTemplate<Object, Object> template) {
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(template,
                 (record, ex) -> {
-                    // Preserve original partition info in DLQ
                     String dlqTopic = record.topic() + ".DLT";
                     log.error("Sending record from topic {} partition {} offset {} to DLQ {}",
                             record.topic(), record.partition(), record.offset(), dlqTopic);
-
-                    // Keep original partition (optional - or send to partition 0)
                     return new TopicPartition(dlqTopic, record.partition());
                 });
         recoverer.setHeadersFunction((record, ex) -> {

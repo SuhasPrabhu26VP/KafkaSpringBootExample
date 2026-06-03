@@ -41,7 +41,7 @@ public class KafkaProducerConfig {
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
         props.put(AbstractKafkaSchemaSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY,
                 RecordNameStrategy.class.getName());
-        //custom practitioner or any props should be defined first any modification factory properties will not be considered post factory initialization
+        //custom partitioner or any props should be defined first any modification factory properties will not be considered post factory initialization
         props.put(ProducerConfig.PARTITIONER_CLASS_CONFIG,
                 "com.message_broker.kafka_producer.partitioner.DepartmentPartitioner");
         DefaultKafkaProducerFactory<String, schema.avro.AvroUser> factory =
@@ -102,7 +102,7 @@ public class KafkaProducerConfig {
 
         DefaultKafkaProducerFactory<String, String> factory =
                 new DefaultKafkaProducerFactory<>(props);
-        factory.setTransactionIdPrefix("message-tx-");
+        //factory.setTransactionIdPrefix("message-tx-");
         return factory;
     }
 

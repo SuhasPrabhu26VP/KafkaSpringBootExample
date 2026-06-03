@@ -17,12 +17,14 @@ public class KafkaMessageConsumer {
     public void consumeUser(ConsumerRecord<String, schema.avro.AvroUser> record, Acknowledgment ack) {
 
             schema.avro.AvroUser user = record.value();
-            log.info("User received: {} {} | Partition: {} | Offset: {}",
-                    user.getFirstName(), user.getLastName(),
-                    record.partition(), record.offset());
+
             if(user.getUserId().isBlank()){
                 throw new InvalidUserDataException("invalid data");
             }
+            ack.acknowledge();
+        log.info("User received: {} {} | Partition: {} | Offset: {}",
+                user.getFirstName(), user.getLastName(),
+                record.partition(), record.offset());
 
     }
 

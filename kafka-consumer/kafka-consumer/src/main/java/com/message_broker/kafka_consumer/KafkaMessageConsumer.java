@@ -5,23 +5,28 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.TopicPartition;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class KafkaMessageConsumer {
-    @KafkaListener(topics = "${kafka.topics.user.name}",
+    @KafkaListener(
             groupId = "${kafka.topics.user.group}",
+            topicPartitions = {
+                    @TopicPartition(topic = "${kafka.topics.user.name}", partitions = "0")
+            },
             containerFactory = "userKafkaListenerFactory")
     public void consumeUser(ConsumerRecord<String, schema.avro.AvroUser> record, Acknowledgment ack) {
 
-            schema.avro.AvroUser user = record.value();
+        schema.avro.AvroUser user = record.value();
 
-            if(user.getUserId().isBlank()){
-                throw new InvalidUserDataException("invalid data");
-            }
-            ack.acknowledge();
+        if (user.getUserId().isBlank()) {
+            throw new InvalidUserDataException("invalid data");
+        }
+        ack.acknowledge();
         log.info("User received: {} {} | Partition: {} | Offset: {}",
                 user.getFirstName(), user.getLastName(),
                 record.partition(), record.offset());

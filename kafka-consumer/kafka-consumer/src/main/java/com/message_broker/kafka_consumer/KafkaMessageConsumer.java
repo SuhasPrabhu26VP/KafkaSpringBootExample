@@ -4,15 +4,22 @@ import com.message_broker.kafka_consumer.exception.InvalidUserDataException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.message.ConsumerProtocolAssignment;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.TopicPartition;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class KafkaMessageConsumer {
-    @KafkaListener(topics = "${kafka.topics.user.name}",
+    @KafkaListener(
             groupId = "${kafka.topics.user.group}",
+            topicPartitions = {
+            @TopicPartition(
+                    topic = "${kafka.topics.user.name}",
+                    partitions = {"0","1"}
+            )},
             containerFactory = "userKafkaListenerFactory")
     public void consumeUser(ConsumerRecord<String, schema.avro.AvroUser> record, Acknowledgment ack) {
 

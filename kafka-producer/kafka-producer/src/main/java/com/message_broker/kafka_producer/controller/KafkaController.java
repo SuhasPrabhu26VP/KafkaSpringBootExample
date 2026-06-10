@@ -5,6 +5,7 @@ import com.message_broker.kafka_producer.dto.CompanyDto;
 import com.message_broker.kafka_producer.dto.UserDto;
 import com.message_broker.kafka_producer.mapper.CompanyMapper;
 import com.message_broker.kafka_producer.mapper.UserMapper;
+import com.message_broker.kafka_producer.random.TemperatureProducer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

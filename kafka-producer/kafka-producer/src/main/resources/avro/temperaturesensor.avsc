@@ -1,0 +1,19 @@
+{
+  "type": "record",
+  "name": "AvroTemperatureSensor",
+  "namespace": "schema.avro",
+  "fields": [
+    {
+      "name": "sensorId",
+      "type": "string"
+    },
+    {
+      "name": "temp",
+      "type": "int"
+    },
+    {
+      "name": "createdTime",
+      "type": "long"
+    }
+  ]
+}

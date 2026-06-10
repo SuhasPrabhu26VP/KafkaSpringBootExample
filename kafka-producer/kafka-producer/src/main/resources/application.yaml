@@ -15,3 +15,5 @@ kafka:
       name: company-topic
     message:
       name: message-topic
+    temp:
+      name: temperature-sensor

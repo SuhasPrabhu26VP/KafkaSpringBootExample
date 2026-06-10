@@ -1,0 +1,31 @@
+{
+  "type": "record",
+  "name": "AvroTemperatureAggregate",
+  "namespace": "schema.avro",
+  "fields": [
+    {
+      "name": "sensorId",
+      "type": "string"
+    },
+    {
+      "name": "totalTemp",
+      "type": "double"
+    },
+    {
+      "name": "count",
+      "type": "long"
+    },
+    {
+      "name": "averageTemp",
+      "type": "double"
+    },
+    {
+      "name": "windowStart",
+      "type": "long"
+    },
+    {
+      "name": "windowEnd",
+      "type": "long"
+    }
+  ]
+}

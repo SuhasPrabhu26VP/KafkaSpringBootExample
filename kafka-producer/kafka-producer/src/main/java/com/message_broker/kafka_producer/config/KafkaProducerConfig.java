@@ -16,11 +16,10 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import schema.avro.AvroCompany;
+import schema.avro.AvroTemperatureSensor;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Configuration
 @EnableTransactionManagement
@@ -109,6 +108,21 @@ public class KafkaProducerConfig {
     @Bean
     public KafkaTemplate<String, String> messageIdKafkaTemplate() {
         return new KafkaTemplate<String, String>(messageIdProducerFactory());
+    }
+
+    @Bean
+    public ProducerFactory<String, AvroTemperatureSensor> tempProducerFactory() {
+        Map<String, Object> props = createDefaultProps();
+        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
+        props.put(AbstractKafkaSchemaSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY,
+                RecordNameStrategy.class.getName());
+        return new DefaultKafkaProducerFactory<>(props);
+    }
+    @Bean
+    public KafkaTemplate<String, AvroTemperatureSensor> tempKafkaTemplate() {
+        return new KafkaTemplate<String, AvroTemperatureSensor>(tempProducerFactory());
     }
 
     private Map<String, Object> createDefaultProps() {

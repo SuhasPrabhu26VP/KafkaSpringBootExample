@@ -48,6 +48,15 @@ public class KafkaStreamsConfig {
                 TopicBuilder.name("user-input-topic").partitions(3).replicas(3).build()
         );
     }
+    @Bean
+    public KafkaAdmin.NewTopics temperatureTopics() {
+        return new KafkaAdmin.NewTopics(
+                TopicBuilder.name("tumbling-temp-output").partitions(3).replicas(3).build(),
+                TopicBuilder.name("hopping-temp-output").partitions(3).replicas(3).build(),
+                TopicBuilder.name("session-temp-output").partitions(3).replicas(3).build(),
+                TopicBuilder.name("sliding-temp-output").partitions(3).replicas(3).build()
+        );
+    }
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     public KafkaStreamsConfiguration kafkaStreamsConfig() {

@@ -112,7 +112,7 @@
                         </goals>
                         <configuration>
                             <sourceDirectory>${project.basedir}/src/main/resources/avro</sourceDirectory>
-                            <outputDirectory>${project.basedir}/src/main/java/com/kafka/streams/dto</outputDirectory>
+                            <outputDirectory>${project.basedir}/src/main/java</outputDirectory>
                             <stringType>String</stringType>
                         </configuration>
                     </execution>

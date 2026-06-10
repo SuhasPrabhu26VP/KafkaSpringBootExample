@@ -1,0 +1,61 @@
+{
+  "type": "record",
+  "name": "AvroCompanyStats",
+  "namespace": "schema.avro",
+  "fields": [
+    {
+      "name": "companyId",
+      "type": "string"
+    },
+    {
+      "name": "headcount",
+      "type": "int",
+      "default": 0
+    },
+    {
+      "name": "totalSalary",
+      "type": "double",
+      "default": 0.0
+    },
+    {
+      "name": "averageSalary",
+      "type": "double",
+      "default": 0.0
+    },
+    {
+      "name": "activeCount",
+      "type": "int",
+      "default": 0
+    },
+    {
+      "name": "inactiveCount",
+      "type": "int",
+      "default": 0
+    },
+    {
+      "name": "engineeringCount",
+      "type": "int",
+      "default": 0
+    },
+    {
+      "name": "hrCount",
+      "type": "int",
+      "default": 0
+    },
+    {
+      "name": "salesCount",
+      "type": "int",
+      "default": 0
+    },
+    {
+      "name": "financeCount",
+      "type": "int",
+      "default": 0
+    },
+    {
+      "name": "lastUpdatedAt",
+      "type": "long",
+      "default": 0
+    }
+  ]
+}

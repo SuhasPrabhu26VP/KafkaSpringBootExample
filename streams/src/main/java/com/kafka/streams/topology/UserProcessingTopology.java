@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import schema.avro.AvroUser;
+import schema.avro.Country;
+import schema.avro.UserStatus;
 
 import java.util.Map;
 
@@ -40,23 +42,29 @@ public class UserProcessingTopology {
                 .stream(userTopic, Consumed.with(Serdes.String(), userSerde));
 
         KStream<String, AvroUser> activeUsers = userStream
-                .filter((key, user) -> user != null && !"INACTIVE".equals(user.getStatus()))
+                .filter((key, user) -> {
+                    if (user == null) return false;
+                    boolean isActive = user.getStatus() != UserStatus.INACTIVE
+                            && user.getStatus() != UserStatus.TERMINATED;
+                    return isActive ;
+                })
                 .peek((key, user) -> log.info(
-                        "Processing user: {} {} from {}",
-                        user.getFirstName(), user.getLastName(), user.getCountry()));
+                        "Processing user: {} {} | status={} country={} dept={}",
+                        user.getFirstName(), user.getLastName(),
+                        user.getStatus(), user.getCountry(), user.getDepartment()));
 
         activeUsers
                 .split(Named.as(BRANCH_PREFIX))
                 .branch(
-                        (key, user) -> "IN".equals(user.getCountry()),
+                        (key, user) -> Country.IN == user.getCountry(),  
                         Branched.<String, AvroUser>withConsumer(s -> s.to(TOPIC_INDIAN, produced)).withName("india")
                 )
                 .branch(
-                        (key, user) -> "US".equals(user.getCountry()),
+                        (key, user) -> Country.US == user.getCountry(),
                         Branched.<String, AvroUser>withConsumer(s -> s.to(TOPIC_US, produced)).withName("us")
                 )
                 .branch(
-                        (key, user) -> "UK".equals(user.getCountry()),
+                        (key, user) -> Country.UK == user.getCountry(),
                         Branched.<String, AvroUser>withConsumer(s -> s.to(TOPIC_UK, produced)).withName("uk")
                 )
                 .defaultBranch(

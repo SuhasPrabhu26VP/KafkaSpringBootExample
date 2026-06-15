@@ -9,7 +9,6 @@ import org.springframework.validation.annotation.Validated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 
-
 @Getter
 @Setter
 @Validated
@@ -30,6 +29,9 @@ public class KafkaTopicProperties {
         private UserEvents userEvents = new UserEvents();
         private UsersChangelog usersChangelog = new UsersChangelog();
         private CompaniesGlobal companiesGlobal = new CompaniesGlobal();
+        private Temp temp = new Temp();
+        private CompaniesChangelog companiesChangelog = new CompaniesChangelog();
+
 
 
         @Getter @Setter
@@ -62,6 +64,18 @@ public class KafkaTopicProperties {
         public static class CompaniesGlobal {
             @NotBlank private String name = "companies-global-topic";
         }
+
+
+        @Getter @Setter
+        public static class Temp {
+            @NotBlank private String name = "temperature-sensor";
+        }
+
+
+        @Getter @Setter
+        public static class CompaniesChangelog {
+            @NotBlank private String name = "companies-changelog";
+        }
     }
 
     @Getter
@@ -73,5 +87,3 @@ public class KafkaTopicProperties {
         @Positive private long asymmetricAfterMinutes = 10L;
     }
 }
-
-

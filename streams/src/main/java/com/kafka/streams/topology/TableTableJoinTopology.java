@@ -81,6 +81,9 @@ public class TableTableJoinTopology {
                 .to(OutputTopics.TABLE_TABLE_LEFT,
                         Produced.<String, String>as("sink-tt-left")
                                 .withValueSerde(Serdes.String()));
+
+
+  //foreign key joins
         KTable<String, AvroUser> userTableFk = builder
                 .table(props.getTopics().getUsersChangelog().getName(),
                         Consumed.with(Serdes.String(), userSerde)

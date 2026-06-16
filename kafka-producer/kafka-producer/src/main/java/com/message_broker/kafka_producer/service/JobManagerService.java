@@ -1,6 +1,7 @@
 package com.message_broker.kafka_producer.service;
 
 import com.message_broker.kafka_producer.job.CompanyDataGeneratorJob;
+import com.message_broker.kafka_producer.job.TempDataGeneratorJob;
 import com.message_broker.kafka_producer.job.UserDataGeneratorJob;
 import lombok.RequiredArgsConstructor;
 import org.quartz.*;
@@ -19,7 +20,8 @@ public class JobManagerService {
 
     private static final Map<String, Class<? extends Job>> JOB_REGISTRY = Map.of(
             "user-generator",    UserDataGeneratorJob.class,
-            "company-generator", CompanyDataGeneratorJob.class
+            "company-generator", CompanyDataGeneratorJob.class,
+            "temp-generator", TempDataGeneratorJob.class
     );
 
     public String startJob(String jobCode) throws SchedulerException {

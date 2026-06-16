@@ -1,0 +1,213 @@
+{
+  "info": {
+    "name": "kafka",
+    "description": null,
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "KafkaSendUser",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8083/api/v1/user",
+          "protocol": "http",
+          "host": [
+            "localhost:8083"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "user"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"Suhas1\",\n  \"lastName\": \"TEST1\",\n  \"age\": 28,\n  \"active\": true,\n  \"userId\": \"USER-001\",\n  \"companyId\": \"COMP-001\",\n  \"department\": \"SALES\",\n  \"country\": \"IN\",\n  \"salary\": 2.00,\n  \"status\": \"ACTIVE\",\n  \"createdAt\": 1717000000000\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "KafkaSendCompanyInfo",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8083/api/v1/company",
+          "protocol": "http",
+          "host": [
+            "localhost:8083"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "company"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Kafka Solutions\",\n  \"address\": \"42 Manyata Park, Bangalore\",\n  \"employeeCount\": 500,\n  \"softwareCompany\": true,\n  \"companyId\": \"COMP-002\",\n  \"industry\": \"TECH\",\n  \"country\": \"IN\",\n  \"revenue\": 15000000.00,\n  \"updatedAt\": 1717000000000\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "STARTUSERDATAGEN",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8083/jobs/start?jobCode=user-generator",
+          "protocol": "http",
+          "host": [
+            "localhost:8083"
+          ],
+          "path": [
+            "jobs",
+            "start"
+          ],
+          "query": [
+            {
+              "key": "jobCode",
+              "value": "user-generator"
+            }
+          ],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "STOPUSERDATAGEN",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8083/jobs/company-generator-8d6fdcaf-15d9-44d7-a9c5-7978e1ec784e/stop",
+          "protocol": "http",
+          "host": [
+            "localhost:8083"
+          ],
+          "path": [
+            "jobs",
+            "company-generator-8d6fdcaf-15d9-44d7-a9c5-7978e1ec784e",
+            "stop"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "STARTCOMPDATAGEN",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8083/jobs/start?jobCode=company-generator",
+          "protocol": "http",
+          "host": [
+            "localhost:8083"
+          ],
+          "path": [
+            "jobs",
+            "start"
+          ],
+          "query": [
+            {
+              "key": "jobCode",
+              "value": "company-generator"
+            }
+          ],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "LIST JOBS",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8083/jobs",
+          "protocol": "http",
+          "host": [
+            "localhost:8083"
+          ],
+          "path": [
+            "jobs"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "STARTTEMPDATAGEN",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8083/jobs/start?jobCode=temp-generator",
+          "protocol": "http",
+          "host": [
+            "localhost:8083"
+          ],
+          "path": [
+            "jobs",
+            "start"
+          ],
+          "query": [
+            {
+              "key": "jobCode",
+              "value": "temp-generator"
+            }
+          ],
+          "variable": []
+        }
+      }
+    }
+  ],
+  "variable": []
+}

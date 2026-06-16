@@ -27,10 +27,10 @@ public class TemperatureProducer {
             "SENSOR-001", "SENSOR-002", "SENSOR-003", "SENSOR-004"
     );
 
-    @EventListener(ApplicationReadyEvent.class)
+  /*  @EventListener(ApplicationReadyEvent.class)
     public void onStartup() {
         produceTemp();
-    }
+    }*/
 
     public void produceTemp() {
         Random random = new Random();

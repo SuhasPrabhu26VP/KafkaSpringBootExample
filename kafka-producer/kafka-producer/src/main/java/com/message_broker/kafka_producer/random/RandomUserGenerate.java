@@ -52,7 +52,7 @@ public class RandomUserGenerate {
         AvroUser user = new AvroUser();
         user.setActive(ThreadLocalRandom.current().nextBoolean());
         user.setUserId("USER-" + ThreadLocalRandom.current().nextInt(1000));
-        user.setCompanyId("COMP-0" + ThreadLocalRandom.current().nextInt(50));
+        user.setCompanyId("COMP-00" + ThreadLocalRandom.current().nextInt(0, 50));
         String fullName = fetcherService.getRandomUserName();
         if (fullName == null || fullName.isBlank()) {
             throw new JobExecutionException("No user names available in cache");

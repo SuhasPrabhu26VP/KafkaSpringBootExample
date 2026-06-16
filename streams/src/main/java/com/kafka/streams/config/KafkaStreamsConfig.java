@@ -58,6 +58,25 @@ public class KafkaStreamsConfig {
         );
     }
 
+    @Bean
+    public KafkaAdmin.NewTopics joinOutputTopics() {
+        return new KafkaAdmin.NewTopics(
+                TopicBuilder.name(OutputTopics.STREAM_TABLE_INNER).partitions(3).replicas(3).build(),
+                TopicBuilder.name(OutputTopics.STREAM_TABLE_LEFT).partitions(3).replicas(3).build(),
+                TopicBuilder.name(OutputTopics.STREAM_TABLE_TEMPORAL).partitions(3).replicas(3).build(),
+                TopicBuilder.name(OutputTopics.STREAM_STREAM_INNER).partitions(3).replicas(3).build(),
+                TopicBuilder.name(OutputTopics.STREAM_STREAM_LEFT).partitions(3).replicas(3).build(),
+                TopicBuilder.name(OutputTopics.STREAM_STREAM_OUTER).partitions(3).replicas(3).build(),
+                TopicBuilder.name(OutputTopics.STREAM_STREAM_ASYMMETRIC).partitions(3).replicas(3).build(),
+                TopicBuilder.name(OutputTopics.STREAM_STREAM_GRACE).partitions(3).replicas(3).build(),
+                TopicBuilder.name(OutputTopics.TABLE_TABLE_INNER).partitions(3).replicas(3).build(),
+                TopicBuilder.name(OutputTopics.TABLE_TABLE_LEFT).partitions(3).replicas(3).build(),
+                TopicBuilder.name(OutputTopics.TABLE_TABLE_FK).partitions(3).replicas(3).build(),
+                TopicBuilder.name(OutputTopics.GLOBAL_INNER).partitions(3).replicas(3).build(),
+                TopicBuilder.name(OutputTopics.GLOBAL_LEFT).partitions(3).replicas(3).build()
+        );
+    }
+
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     public KafkaStreamsConfiguration kafkaStreamsConfig() {
         Map<String, Object> props = new HashMap<>();

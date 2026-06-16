@@ -36,7 +36,7 @@ public class StreamStreamJoinTopology {
 
 
         KStream<String, AvroUser> streamB = builder
-                .stream(props.getTopics().getUserEvents().getName(),
+                .stream(props.getTopics().getUser().getName(),
                         Consumed.with(Serdes.String(), userSerde)
                                 .withName("source-user-events-stream-ss"));
 
@@ -152,6 +152,6 @@ public class StreamStreamJoinTopology {
 
         log.info("StreamStreamJoinTopology registered — topics: streamA={}, streamB={}",
                 props.getTopics().getUser().getName(),
-                props.getTopics().getUserEvents().getName());
+                props.getTopics().getUser().getName());
     }
 }

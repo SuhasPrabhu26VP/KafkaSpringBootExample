@@ -49,7 +49,9 @@ public class NameFetcherService {
             log.warn("No names available in cache");
             return null;
         }
-        return cachedUserNames.get(random.nextInt(cachedUserNames.size()));
+        String fullName =cachedUserNames.get(random.nextInt(cachedUserNames.size()));
+        log.info("Raw name from cache: '{}'", fullName);
+        return fullName;
     }
 
     public String getRandomCompanyName() {
@@ -57,7 +59,9 @@ public class NameFetcherService {
             log.warn("No company names available in cache");
             return null;
         }
-        return cachedCompanyNames.get(random.nextInt(cachedCompanyNames.size()));
+        String fullDetails =cachedCompanyNames.get(random.nextInt(cachedCompanyNames.size()));
+        log.info("Raw comp details from cache: '{}'", fullDetails);
+        return fullDetails;
     }
 
 

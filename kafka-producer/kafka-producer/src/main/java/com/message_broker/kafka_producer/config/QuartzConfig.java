@@ -3,19 +3,17 @@ package com.message_broker.kafka_producer.config;
 import com.message_broker.kafka_producer.factory.AutowiringSpringBeanJobFactory;
 import lombok.RequiredArgsConstructor;
 import org.quartz.Scheduler;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
-import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 
 @Configuration
 @RequiredArgsConstructor
 public class QuartzConfig {
 
 
-    private ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
 
     @Bean
     public SchedulerFactoryBean schedulerFactoryBean() {

@@ -14,10 +14,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class AvroUser extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 6656669062926050145L;
+  private static final long serialVersionUID = 3716867837124632086L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"AvroUser\",\"namespace\":\"schema.avro\",\"fields\":[{\"name\":\"userId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"Required - partition key\"},{\"name\":\"companyId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"Required - links to company partition key\"},{\"name\":\"firstName\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"Required\"},{\"name\":\"lastName\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"Required\"},{\"name\":\"status\",\"type\":{\"type\":\"enum\",\"name\":\"UserStatus\",\"symbols\":[\"ACTIVE\",\"INACTIVE\",\"TERMINATED\",\"ON_LEAVE\"]},\"doc\":\"Required - user employment status\"},{\"name\":\"country\",\"type\":{\"type\":\"enum\",\"name\":\"Country\",\"symbols\":[\"IN\",\"US\",\"UK\",\"OTHER\"]},\"doc\":\"Required - for data locality and routing\"},{\"name\":\"department\",\"type\":{\"type\":\"enum\",\"name\":\"Department\",\"symbols\":[\"ENGINEERING\",\"SALES\",\"HR\",\"FINANCE\",\"OPERATIONS\",\"OTHER\"]},\"doc\":\"Required - routing field\"},{\"name\":\"active\",\"type\":\"boolean\",\"doc\":\"Required - quick filter flag\"},{\"name\":\"createdAt\",\"type\":\"long\",\"doc\":\"Required - epoch millis\"},{\"name\":\"age\",\"type\":[\"null\",\"int\"],\"doc\":\"Optional - not always available from HR systems\",\"default\":null},{\"name\":\"salary\",\"type\":[\"null\",\"double\"],\"doc\":\"Optional - sensitive data, may be excluded\",\"default\":null}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"AvroUser\",\"namespace\":\"schema.avro\",\"fields\":[{\"name\":\"userId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"Required - partition key\"},{\"name\":\"companyId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"Required - links to company partition key\"},{\"name\":\"firstName\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"Required\"},{\"name\":\"lastName\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"},\"doc\":\"Required\"},{\"name\":\"status\",\"type\":{\"type\":\"enum\",\"name\":\"UserStatus\",\"symbols\":[\"ACTIVE\",\"INACTIVE\",\"TERMINATED\",\"ON_LEAVE\"]},\"doc\":\"Required - user employment status\"},{\"name\":\"country\",\"type\":{\"type\":\"enum\",\"name\":\"Country\",\"symbols\":[\"IN\",\"US\",\"UK\",\"OTHER\"]},\"doc\":\"Required - for data locality and routing\"},{\"name\":\"department\",\"type\":{\"type\":\"enum\",\"name\":\"Department\",\"symbols\":[\"ENGINEERING\",\"SALES\",\"HR\",\"FINANCE\",\"OPERATIONS\",\"OTHER\"]},\"doc\":\"Required - routing field\"},{\"name\":\"active\",\"type\":\"boolean\",\"doc\":\"Required - quick filter flag\"},{\"name\":\"createdAt\",\"type\":\"long\",\"doc\":\"Required - epoch millis\"},{\"name\":\"age\",\"type\":[\"null\",\"int\"],\"doc\":\"Optional - not always available from HR systems\",\"default\":null},{\"name\":\"salary\",\"type\":[\"null\",\"double\"],\"doc\":\"Optional - sensitive data, may be excluded\",\"default\":null},{\"name\":\"updatedAt\",\"type\":\"long\",\"doc\":\"Required - epoch millis\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -95,6 +95,8 @@ public class AvroUser extends org.apache.avro.specific.SpecificRecordBase implem
   private java.lang.Integer age;
   /** Optional - sensitive data, may be excluded */
   private java.lang.Double salary;
+  /** Required - epoch millis */
+  private long updatedAt;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -116,8 +118,9 @@ public class AvroUser extends org.apache.avro.specific.SpecificRecordBase implem
    * @param createdAt Required - epoch millis
    * @param age Optional - not always available from HR systems
    * @param salary Optional - sensitive data, may be excluded
+   * @param updatedAt Required - epoch millis
    */
-  public AvroUser(java.lang.String userId, java.lang.String companyId, java.lang.String firstName, java.lang.String lastName, schema.avro.UserStatus status, schema.avro.Country country, schema.avro.Department department, java.lang.Boolean active, java.lang.Long createdAt, java.lang.Integer age, java.lang.Double salary) {
+  public AvroUser(java.lang.String userId, java.lang.String companyId, java.lang.String firstName, java.lang.String lastName, schema.avro.UserStatus status, schema.avro.Country country, schema.avro.Department department, java.lang.Boolean active, java.lang.Long createdAt, java.lang.Integer age, java.lang.Double salary, java.lang.Long updatedAt) {
     this.userId = userId;
     this.companyId = companyId;
     this.firstName = firstName;
@@ -129,6 +132,7 @@ public class AvroUser extends org.apache.avro.specific.SpecificRecordBase implem
     this.createdAt = createdAt;
     this.age = age;
     this.salary = salary;
+    this.updatedAt = updatedAt;
   }
 
   @Override
@@ -152,6 +156,7 @@ public class AvroUser extends org.apache.avro.specific.SpecificRecordBase implem
     case 8: return createdAt;
     case 9: return age;
     case 10: return salary;
+    case 11: return updatedAt;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -172,6 +177,7 @@ public class AvroUser extends org.apache.avro.specific.SpecificRecordBase implem
     case 8: createdAt = (java.lang.Long)value$; break;
     case 9: age = (java.lang.Integer)value$; break;
     case 10: salary = (java.lang.Double)value$; break;
+    case 11: updatedAt = (java.lang.Long)value$; break;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -375,6 +381,24 @@ public class AvroUser extends org.apache.avro.specific.SpecificRecordBase implem
   }
 
   /**
+   * Gets the value of the 'updatedAt' field.
+   * @return Required - epoch millis
+   */
+  public long getUpdatedAt() {
+    return updatedAt;
+  }
+
+
+  /**
+   * Sets the value of the 'updatedAt' field.
+   * Required - epoch millis
+   * @param value the value to set.
+   */
+  public void setUpdatedAt(long value) {
+    this.updatedAt = value;
+  }
+
+  /**
    * Creates a new AvroUser RecordBuilder.
    * @return A new AvroUser RecordBuilder
    */
@@ -437,6 +461,8 @@ public class AvroUser extends org.apache.avro.specific.SpecificRecordBase implem
     private java.lang.Integer age;
     /** Optional - sensitive data, may be excluded */
     private java.lang.Double salary;
+    /** Required - epoch millis */
+    private long updatedAt;
 
     /** Creates a new Builder */
     private Builder() {
@@ -493,6 +519,10 @@ public class AvroUser extends org.apache.avro.specific.SpecificRecordBase implem
         this.salary = data().deepCopy(fields()[10].schema(), other.salary);
         fieldSetFlags()[10] = other.fieldSetFlags()[10];
       }
+      if (isValidValue(fields()[11], other.updatedAt)) {
+        this.updatedAt = data().deepCopy(fields()[11].schema(), other.updatedAt);
+        fieldSetFlags()[11] = other.fieldSetFlags()[11];
+      }
     }
 
     /**
@@ -544,6 +574,10 @@ public class AvroUser extends org.apache.avro.specific.SpecificRecordBase implem
       if (isValidValue(fields()[10], other.salary)) {
         this.salary = data().deepCopy(fields()[10].schema(), other.salary);
         fieldSetFlags()[10] = true;
+      }
+      if (isValidValue(fields()[11], other.updatedAt)) {
+        this.updatedAt = data().deepCopy(fields()[11].schema(), other.updatedAt);
+        fieldSetFlags()[11] = true;
       }
     }
 
@@ -1029,6 +1063,49 @@ public class AvroUser extends org.apache.avro.specific.SpecificRecordBase implem
       return this;
     }
 
+    /**
+      * Gets the value of the 'updatedAt' field.
+      * Required - epoch millis
+      * @return The value.
+      */
+    public long getUpdatedAt() {
+      return updatedAt;
+    }
+
+
+    /**
+      * Sets the value of the 'updatedAt' field.
+      * Required - epoch millis
+      * @param value The value of 'updatedAt'.
+      * @return This builder.
+      */
+    public schema.avro.AvroUser.Builder setUpdatedAt(long value) {
+      validate(fields()[11], value);
+      this.updatedAt = value;
+      fieldSetFlags()[11] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'updatedAt' field has been set.
+      * Required - epoch millis
+      * @return True if the 'updatedAt' field has been set, false otherwise.
+      */
+    public boolean hasUpdatedAt() {
+      return fieldSetFlags()[11];
+    }
+
+
+    /**
+      * Clears the value of the 'updatedAt' field.
+      * Required - epoch millis
+      * @return This builder.
+      */
+    public schema.avro.AvroUser.Builder clearUpdatedAt() {
+      fieldSetFlags()[11] = false;
+      return this;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public AvroUser build() {
@@ -1045,6 +1122,7 @@ public class AvroUser extends org.apache.avro.specific.SpecificRecordBase implem
         record.createdAt = fieldSetFlags()[8] ? this.createdAt : (java.lang.Long) defaultValue(fields()[8]);
         record.age = fieldSetFlags()[9] ? this.age : (java.lang.Integer) defaultValue(fields()[9]);
         record.salary = fieldSetFlags()[10] ? this.salary : (java.lang.Double) defaultValue(fields()[10]);
+        record.updatedAt = fieldSetFlags()[11] ? this.updatedAt : (java.lang.Long) defaultValue(fields()[11]);
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
         throw e;
@@ -1111,6 +1189,8 @@ public class AvroUser extends org.apache.avro.specific.SpecificRecordBase implem
       out.writeDouble(this.salary);
     }
 
+    out.writeLong(this.updatedAt);
+
   }
 
   @Override public void customDecode(org.apache.avro.io.ResolvingDecoder in)
@@ -1150,8 +1230,10 @@ public class AvroUser extends org.apache.avro.specific.SpecificRecordBase implem
         this.salary = in.readDouble();
       }
 
+      this.updatedAt = in.readLong();
+
     } else {
-      for (int i = 0; i < 11; i++) {
+      for (int i = 0; i < 12; i++) {
         switch (fieldOrder[i].pos()) {
         case 0:
           this.userId = in.readString();
@@ -1205,6 +1287,10 @@ public class AvroUser extends org.apache.avro.specific.SpecificRecordBase implem
           } else {
             this.salary = in.readDouble();
           }
+          break;
+
+        case 11:
+          this.updatedAt = in.readLong();
           break;
 
         default:

@@ -29,19 +29,24 @@ public class GlobalTableJoinTopology {
     @Autowired
     public void buildTopology(StreamsBuilder builder) {
 
-        KStream<String, AvroUser> usersStream = builder
+        KStream<String, AvroUser> usersStreamInner = builder
                 .stream(props.getTopics().getUser().getName(),
                         Consumed.with(Serdes.String(), userSerde)
-                                .withName("source-users-stream-global"));
+                                .withName("source-users-global-inner"));
+
+        KStream<String, AvroUser> usersStreamLeft = builder
+                .stream(props.getTopics().getUser().getName(),
+                        Consumed.with(Serdes.String(), userSerde)
+                                .withName("source-users-global-left"));
         GlobalKTable<String, AvroCompany> globalCompanyTable = builder
-                .globalTable(props.getTopics().getCompaniesGlobal().getName(),
+                .globalTable(props.getTopics().getCompany().getName(),
                         Consumed.with(Serdes.String(), companySerde)
                                 .withName("source-companies-global"),
                         Materialized.<String, AvroCompany, KeyValueStore<Bytes, byte[]>>
                                         as("store-global-company")
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(companySerde));
-        usersStream
+        usersStreamInner
                 .join(
                         globalCompanyTable,
                         (userId, user) -> user.getCompanyId(),
@@ -54,7 +59,7 @@ public class GlobalTableJoinTopology {
                 .to(OutputTopics.GLOBAL_INNER,
                         Produced.<String, String>as("sink-global-inner")
                                 .withValueSerde(Serdes.String()));
-        usersStream
+        usersStreamLeft
                 .leftJoin(
                         globalCompanyTable,
                         (userId, user) -> user.getCompanyId(),
@@ -75,6 +80,6 @@ public class GlobalTableJoinTopology {
 
         log.info("GlobalTableJoinTopology registered — topics: user={}, global={}",
                 props.getTopics().getUser().getName(),
-                props.getTopics().getCompaniesGlobal().getName());
+                props.getTopics().getCompany().getName());
     }
 }

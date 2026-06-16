@@ -33,13 +33,26 @@ public class StreamTableJoinTopology {
     public void buildTopology(StreamsBuilder builder) {
 
 
-        KStream<String, AvroUser> usersStream = builder
+        KStream<String, AvroUser> usersStreamInner = builder
                 .stream(props.getTopics().getUser().getName(),
                         Consumed.with(Serdes.String(), userSerde)
-                                .withName("source-users-stream"))
+                                .withName("source-users-inner"))
                 .selectKey((userId, user) -> user.getCompanyId(),
-                        Named.as("rekey-user-to-companyId"));
+                        Named.as("rekey-user-companyId-inner"));
 
+        KStream<String, AvroUser> usersStreamLeft = builder
+                .stream(props.getTopics().getUser().getName(),
+                        Consumed.with(Serdes.String(), userSerde)
+                                .withName("source-users-left"))
+                .selectKey((userId, user) -> user.getCompanyId(),
+                        Named.as("rekey-user-companyId-left"));
+
+        KStream<String, AvroUser> usersStreamTemporal = builder
+                .stream(props.getTopics().getUser().getName(),
+                        Consumed.with(Serdes.String(), userSerde)
+                                .withName("source-users-temporal"))
+                .selectKey((userId, user) -> user.getCompanyId(),
+                        Named.as("rekey-user-companyId-temporal"));
 
         KTable<String, AvroCompany> companyTable = builder
                 .table(props.getTopics().getCompany().getName(),
@@ -51,7 +64,7 @@ public class StreamTableJoinTopology {
                                 .withValueSerde(companySerde));
 
 
-        usersStream
+        usersStreamInner
                 .join(
                         companyTable,
                         this::enrichUserWithCompany,
@@ -64,7 +77,7 @@ public class StreamTableJoinTopology {
                                 .withValueSerde(Serdes.String()));
 
 
-        usersStream
+        usersStreamLeft
                 .leftJoin(
                         companyTable,
                         this::enrichUserWithCompanyNullSafe,
@@ -89,7 +102,7 @@ public class StreamTableJoinTopology {
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(companySerde));
 
-        usersStream
+        usersStreamTemporal
                 .join(
                         versionedCompanyTable,
                         (user, company) -> String.format(

@@ -29,18 +29,12 @@ public class RandomUserGenerate {
 
     public void produceUser() throws JobExecutionException {
             final AvroUser user =  createRandomUser();
-            ProducerRecord<String, AvroUser> record =
-                    new ProducerRecord<>(userTopicName, user.getUserId(), user);
 
-            userKafkaTemplate.send(record)
-                    .thenAccept(result -> log.info(
-                            "Sent User: {} : {}",
-                            user.getFirstName()+" "+user.getLastName(),
-                            result.getRecordMetadata().partition()))
-                    .exceptionally(ex -> {
-                        log.error("Failed to send for user: {}",  user.getFirstName()+" "+user.getLastName(), ex);
-                        return null;
-                    });
+        userKafkaTemplate.executeInTransaction(template -> {
+            template.send(userTopicName, user.getUserId(), user);
+            log.info("User sent transactionally: {}", user.getUserId());
+            return true;
+        });
     }
 
     private AvroUser createRandomUser() throws JobExecutionException {

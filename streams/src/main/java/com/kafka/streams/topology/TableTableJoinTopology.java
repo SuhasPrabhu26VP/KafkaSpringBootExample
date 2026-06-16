@@ -29,7 +29,7 @@ public class TableTableJoinTopology {
     @Autowired
     public void buildTopology(StreamsBuilder builder) {
         KTable<String, AvroUser> userTable = builder
-                .table(props.getTopics().getUsersChangelog().getName(),
+                .table(props.getTopics().getUser().getName(),
                         Consumed.with(Serdes.String(), userSerde)
                                 .withName("source-users-changelog-tt"),
                         Materialized.<String, AvroUser, KeyValueStore<Bytes, byte[]>>
@@ -47,12 +47,11 @@ public class TableTableJoinTopology {
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(companySerde));
         userTable
-                .join(
-                        companyTable,
+                .join(companyTable,
+                        user -> user.getCompanyId(),
                         (user, company) -> String.format(
                                 "[TT-INNER] userId=%s | name=%s %s | company=%s [%s] | country=%s",
-                                user.getUserId(),
-                                user.getFirstName(), user.getLastName(),
+                                user.getUserId(), user.getFirstName(), user.getLastName(),
                                 company.getName(), company.getIndustry(), company.getCountry()),
                         Materialized.<String, String, KeyValueStore<Bytes, byte[]>>
                                         as("store-tt-inner-result")
@@ -63,9 +62,10 @@ public class TableTableJoinTopology {
                         Produced.<String, String>as("sink-tt-inner")
                                 .withValueSerde(Serdes.String()));
 
+
         userTable
-                .leftJoin(
-                        companyTable,
+                .leftJoin(companyTable,
+                        user -> user.getCompanyId(),
                         (user, company) -> {
                             String companyName = (company != null) ? company.getName()                : "UNREGISTERED";
                             String industry    = (company != null) ? company.getIndustry().toString() : "N/A";
@@ -83,45 +83,8 @@ public class TableTableJoinTopology {
                                 .withValueSerde(Serdes.String()));
 
 
-  //foreign key joins
-        KTable<String, AvroUser> userTableFk = builder
-                .table(props.getTopics().getUsersChangelog().getName(),
-                        Consumed.with(Serdes.String(), userSerde)
-                                .withName("source-users-changelog-fk"),
-                        Materialized.<String, AvroUser, KeyValueStore<Bytes, byte[]>>
-                                        as("store-user-fk")
-                                .withKeySerde(Serdes.String())
-                                .withValueSerde(userSerde));
-
-        KTable<String, AvroCompany> companyTableFk = builder
-                .table(props.getTopics().getCompany().getName(),
-                        Consumed.with(Serdes.String(), companySerde)
-                                .withName("source-companies-changelog-fk"),
-                        Materialized.<String, AvroCompany, KeyValueStore<Bytes, byte[]>>
-                                        as("store-company-fk")
-                                .withKeySerde(Serdes.String())
-                                .withValueSerde(companySerde));
-        userTableFk
-                .join(
-                        companyTableFk,
-                        user -> user.getCompanyId(),
-                        (user, company) -> String.format(
-                                "[FK-JOIN] userId=%s | name=%s %s | company=%s | industry=%s | country=%s | revenue=%s",
-                                user.getUserId(),
-                                user.getFirstName(), user.getLastName(),
-                                company.getName(), company.getIndustry(), company.getCountry(),
-                                company.getRevenue() != null ? company.getRevenue() : "N/A"),
-                        Materialized.<String, String, KeyValueStore<Bytes, byte[]>>
-                                        as("store-tt-fk-result")
-                                .withKeySerde(Serdes.String())
-                                .withValueSerde(Serdes.String()))
-                .toStream()
-                .to(OutputTopics.TABLE_TABLE_FK,
-                        Produced.<String, String>as("sink-tt-fk")
-                                .withValueSerde(Serdes.String()));
-
         log.info("TableTableJoinTopology registered — topics: usersChangelog={}, company={}",
-                props.getTopics().getUsersChangelog().getName(),
+                props.getTopics().getUser().getName(),
                 props.getTopics().getCompany().getName());
     }
 }

@@ -30,16 +30,11 @@ public class RandomCompanyGenerate {
 
     public void produceCompany() {
         final AvroCompany company =  createRandomCompanyData();
-        ProducerRecord<String, schema.avro.AvroCompany> producerRecord =
-                new ProducerRecord<>(companyTopicName, company.getCompanyId(), company);
-        companyKafkaTemplate.send(producerRecord)
-                .thenAccept(result ->
-                        log.info("Company sent: {} to partition: {}",
-                                company.getCompanyId(), result.getRecordMetadata().partition()))
-                .exceptionally(ex -> {
-                    log.error("Failed to send company: {}", company.getCompanyId(), ex);
-                    return null;
-                });
+        companyKafkaTemplate.executeInTransaction(template -> {
+            template.send(companyTopicName, company.getCompanyId(), company);
+            log.info("COMP sent transactionally: {}", company.getCompanyId());
+            return true;
+        });
     }
 
     private AvroCompany createRandomCompanyData() {

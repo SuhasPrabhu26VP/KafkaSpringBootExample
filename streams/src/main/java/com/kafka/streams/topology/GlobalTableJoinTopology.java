@@ -39,7 +39,7 @@ public class GlobalTableJoinTopology {
                         Consumed.with(Serdes.String(), userSerde)
                                 .withName("source-users-global-left"));
         GlobalKTable<String, AvroCompany> globalCompanyTable = builder
-                .globalTable(props.getTopics().getCompany().getName(),
+                .globalTable(props.getTopics().getCompany().getGlobal(),
                         Consumed.with(Serdes.String(), companySerde)
                                 .withName("source-companies-global"),
                         Materialized.<String, AvroCompany, KeyValueStore<Bytes, byte[]>>

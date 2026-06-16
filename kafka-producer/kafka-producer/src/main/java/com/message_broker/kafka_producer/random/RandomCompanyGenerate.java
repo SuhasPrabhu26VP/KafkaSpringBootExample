@@ -20,9 +20,19 @@ import java.util.concurrent.ThreadLocalRandom;
 public class RandomCompanyGenerate {
     @Value("${kafka.topics.company.name}")
     private String companyTopicName;
+    @Value("${kafka.topics.company.global.name}")
+    private String globalCompanyTopicName;
+
+    @Value("${kafka.topics.company.changelog.name}")
+    private String companyChangelogTopicName;
 
     private final KafkaTemplate<String, AvroCompany> companyKafkaTemplate;
 
+    private final KafkaTemplate<String, AvroCompany> globalCompanyKafkaTemplate;
+
+
+
+    private final KafkaTemplate<String, AvroCompany> companyChangeLogKafkaTemplate;
     @Autowired
     private NameFetcherService fetcherService;
 
@@ -33,6 +43,18 @@ public class RandomCompanyGenerate {
         companyKafkaTemplate.executeInTransaction(template -> {
             template.send(companyTopicName, company.getCompanyId(), company);
             log.info("COMP sent transactionally: {}", company.getCompanyId());
+            return true;
+        });
+
+        globalCompanyKafkaTemplate.executeInTransaction(template -> {
+            template.send(globalCompanyTopicName, company.getCompanyId(), company);
+            log.info("Global COMP sent transactionally: {}", company.getCompanyId());
+            return true;
+        });
+
+        companyChangeLogKafkaTemplate.executeInTransaction(template -> {
+            template.send(companyChangelogTopicName, company.getCompanyId(), company);
+            log.info("COMP Changelog sent transactionally: {}", company.getCompanyId());
             return true;
         });
     }

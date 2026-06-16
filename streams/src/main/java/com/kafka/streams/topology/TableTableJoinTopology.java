@@ -29,7 +29,7 @@ public class TableTableJoinTopology {
     @Autowired
     public void buildTopology(StreamsBuilder builder) {
         KTable<String, AvroUser> userTable = builder
-                .table(props.getTopics().getUser().getName(),
+                .table(props.getTopics().getUserChangelog().getName(),
                         Consumed.with(Serdes.String(), userSerde)
                                 .withName("source-users-changelog-tt"),
                         Materialized.<String, AvroUser, KeyValueStore<Bytes, byte[]>>
@@ -39,7 +39,7 @@ public class TableTableJoinTopology {
 
 
         KTable<String, AvroCompany> companyTable = builder
-                .table(props.getTopics().getCompany().getName(),
+                .table(props.getTopics().getCompanyChangelog().getName(),
                         Consumed.with(Serdes.String(), companySerde)
                                 .withName("source-companies-changelog-tt"),
                         Materialized.<String, AvroCompany, KeyValueStore<Bytes, byte[]>>
@@ -84,7 +84,7 @@ public class TableTableJoinTopology {
 
 
         log.info("TableTableJoinTopology registered — topics: usersChangelog={}, company={}",
-                props.getTopics().getUser().getName(),
-                props.getTopics().getCompany().getName());
+                props.getTopics().getUserChangelog().getName(),
+                props.getTopics().getCompanyChangelog().getName());
     }
 }

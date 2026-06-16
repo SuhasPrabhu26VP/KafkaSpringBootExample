@@ -22,7 +22,12 @@ public class RandomUserGenerate {
     @Value("${kafka.topics.user.name}")
     private String userTopicName;
 
+    @Value("${kafka.topics.user.changelog.name}")
+    private String userChangelogTopicName;
+
     private final KafkaTemplate<String, schema.avro.AvroUser> userKafkaTemplate;
+
+    private final KafkaTemplate<String, schema.avro.AvroUser> userChangelogKafkaTemplate;
     private final NameFetcherService fetcherService;
 
 
@@ -33,6 +38,12 @@ public class RandomUserGenerate {
         userKafkaTemplate.executeInTransaction(template -> {
             template.send(userTopicName, user.getUserId(), user);
             log.info("User sent transactionally: {}", user.getUserId());
+            return true;
+        });
+
+        userChangelogKafkaTemplate.executeInTransaction(template -> {
+            template.send(userChangelogTopicName, user.getUserId(), user);
+            log.info("User changelog sent transactionally: {}", user.getUserId());
             return true;
         });
     }

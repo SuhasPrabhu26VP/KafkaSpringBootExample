@@ -11,8 +11,14 @@ kafka:
   topics:
     user:
       name: user-topic
+      changelog:
+        name: user-changelog-topic
     company:
       name: company-topic
+      changelog:
+        name: company-changelog-topic
+      global:
+        name: global-company-topic
     message:
       name: message-topic
     temp:

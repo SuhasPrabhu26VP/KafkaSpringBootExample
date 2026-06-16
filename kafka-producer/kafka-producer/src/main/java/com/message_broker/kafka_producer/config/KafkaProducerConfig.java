@@ -57,6 +57,34 @@ public class KafkaProducerConfig {
         template.setTransactionIdPrefix("user-tx-");
         return template;
     }
+
+    @Bean
+    public ProducerFactory<String, schema.avro.AvroUser> userChangeLogProducerFactory() {
+        Map<String, Object> props = createDefaultProps();
+        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
+        props.put(AbstractKafkaSchemaSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY,
+                RecordNameStrategy.class.getName());
+        //custom partitioner or any props should be defined first any modification factory properties will not be considered post factory initialization
+        props.put(ProducerConfig.PARTITIONER_CLASS_CONFIG,
+                "com.message_broker.kafka_producer.partitioner.DepartmentPartitioner");
+        DefaultKafkaProducerFactory<String, schema.avro.AvroUser> factory =
+                new DefaultKafkaProducerFactory<>(props);
+
+        factory.setTransactionIdPrefix("user-changelog-tx-");
+        return factory;
+    }
+
+    @Bean
+    public KafkaTemplate<String, schema.avro.AvroUser> userChangelogKafkaTemplate() {
+        KafkaTemplate<String, schema.avro.AvroUser> template =
+                new KafkaTemplate<>(userChangeLogProducerFactory());
+        template.setTransactionIdPrefix("user-changelog-tx-");
+        return template;
+    }
+
+
     @Primary
     @Bean
     public PlatformTransactionManager userTransactionManager(
@@ -86,6 +114,51 @@ public class KafkaProducerConfig {
         return template;
     }
 
+    @Bean
+    public ProducerFactory<String, schema.avro.AvroCompany> globalCompanyProducerFactory() {
+        Map<String, Object> props = createDefaultProps();
+        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
+        props.put(AbstractKafkaSchemaSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY,
+                RecordNameStrategy.class.getName());
+        DefaultKafkaProducerFactory<String, schema.avro.AvroCompany> factory =
+                new DefaultKafkaProducerFactory<>(props);
+
+        factory.setTransactionIdPrefix("global-company-tx-");
+        return factory;
+    }
+
+    @Bean
+    public KafkaTemplate<String, schema.avro.AvroCompany> globalCompanyKafkaTemplate() {
+        KafkaTemplate<String, schema.avro.AvroCompany> template =
+                new KafkaTemplate<>(globalCompanyProducerFactory());
+        template.setTransactionIdPrefix("global-company-tx-");
+        return template;
+    }
+
+    @Bean
+    public ProducerFactory<String, schema.avro.AvroCompany> companyChangeLogProducerFactory() {
+        Map<String, Object> props = createDefaultProps();
+        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
+        props.put(AbstractKafkaSchemaSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY,
+                RecordNameStrategy.class.getName());
+        DefaultKafkaProducerFactory<String, schema.avro.AvroCompany> factory =
+                new DefaultKafkaProducerFactory<>(props);
+
+        factory.setTransactionIdPrefix("company-changelog-tx-");
+        return factory;
+    }
+
+    @Bean
+    public KafkaTemplate<String, schema.avro.AvroCompany> companyChangeLogKafkaTemplate() {
+        KafkaTemplate<String, schema.avro.AvroCompany> template =
+                new KafkaTemplate<>(companyChangeLogProducerFactory());
+        template.setTransactionIdPrefix("company-changelog-tx-");
+        return template;
+    }
     @Bean
     public PlatformTransactionManager companyTransactionManager(
             ProducerFactory<String, schema.avro.AvroCompany> companyProducerFactory) {

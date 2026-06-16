@@ -18,8 +18,17 @@ public class KafkaTopicConfig {
     @Value("${kafka.topics.user.name}")
     private String userTopicName;
 
+    @Value("${kafka.topics.user.changelog.name}")
+    private String userChangelogTopicName;
+
     @Value("${kafka.topics.company.name}")
     private String companyTopicName;
+
+    @Value("${kafka.topics.company.global.name}")
+    private String globalCompanyTopicName;
+
+    @Value("${kafka.topics.company.changelog.name}")
+    private String companyChangeLogTopicName;
 
     @Value("${kafka.topics.message.name}")
     private String messageTopicName;
@@ -44,8 +53,30 @@ public class KafkaTopicConfig {
     }
 
     @Bean
+    public NewTopic userChangeLogTopic() {
+        return new NewTopic(userChangelogTopicName, 4, (short) 3)
+                .configs(Map.of(
+                        "retention.ms", "604800000",
+                        "retention.bytes", "1073741824",
+                        "cleanup.policy", "compact,delete",
+                        "min.insync.replicas", "2",
+                        "unclean.leader.election.enable", "false"
+                ));
+    }
+
+    @Bean
     public NewTopic companyTopic() {
         return new NewTopic(companyTopicName, 4, (short) 3);
+    }
+
+    @Bean
+    public NewTopic globalCompanyTopic() {
+        return new NewTopic(globalCompanyTopicName, 4, (short) 3);
+    }
+
+    @Bean
+    public NewTopic companyChangeLogTopic() {
+        return new NewTopic(companyChangeLogTopicName, 4, (short) 3);
     }
 
     @Bean

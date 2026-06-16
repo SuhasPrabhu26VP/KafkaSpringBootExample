@@ -47,12 +47,12 @@ public class StreamTableJoinTopology {
                 .selectKey((userId, user) -> user.getCompanyId(),
                         Named.as("rekey-user-companyId-left"));
 
-        KStream<String, AvroUser> usersStreamTemporal = builder
+/*        KStream<String, AvroUser> usersStreamTemporal = builder
                 .stream(props.getTopics().getUser().getName(),
                         Consumed.with(Serdes.String(), userSerde)
                                 .withName("source-users-temporal"))
                 .selectKey((userId, user) -> user.getCompanyId(),
-                        Named.as("rekey-user-companyId-temporal"));
+                        Named.as("rekey-user-companyId-temporal"));*/
 
         KTable<String, AvroCompany> companyTable = builder
                 .table(props.getTopics().getCompany().getName(),
@@ -90,7 +90,7 @@ public class StreamTableJoinTopology {
                                 .withValueSerde(Serdes.String()));
 
 
-        VersionedBytesStoreSupplier versionedStore = Stores.persistentVersionedKeyValueStore(
+     /*   VersionedBytesStoreSupplier versionedStore = Stores.persistentVersionedKeyValueStore(
                 "store-versioned-company",
                 Duration.ofHours(props.getJoinWindows().getVersionedStoreRetentionHours()));
 
@@ -114,7 +114,7 @@ public class StreamTableJoinTopology {
                                 .withOtherValueSerde(companySerde))
                 .to(OutputTopics.STREAM_TABLE_TEMPORAL,
                         Produced.<String, String>as("sink-stream-table-temporal")
-                                .withValueSerde(Serdes.String()));
+                                .withValueSerde(Serdes.String()));*/
 
         log.info("StreamTableJoinTopology registered — topics: user={}, company={}",
                 props.getTopics().getUser().getName(),

@@ -27,6 +27,8 @@ public class KafkaTopicProperties {
         private Company company = new Company();
         private Message message = new Message();
         private Temp temp = new Temp();
+        private UserChangelog userChangelog       = new UserChangelog();
+        private CompanyChangelog companyChangelog = new CompanyChangelog();
 
 
 
@@ -39,6 +41,7 @@ public class KafkaTopicProperties {
         public static class Company {
             @NotBlank private String name = "company-topic";
             @NotBlank private String statistics = "company-stats-topic";
+            @NotBlank private String global     = "global-company-topic";
         }
 
         @Getter @Setter
@@ -51,6 +54,15 @@ public class KafkaTopicProperties {
             @NotBlank private String name = "temperature-sensor";
         }
 
+        @Getter @Setter
+        public static class UserChangelog {
+            @NotBlank private String name = "user-changelog-topic";
+        }
+
+        @Getter @Setter
+        public static class CompanyChangelog {
+            @NotBlank private String name = "company-changelog-topic";
+        }
     }
 
     @Getter

@@ -10,6 +10,11 @@ volumes:
   kafka3-data:
 
 services:
+
+  # ─────────────────────────────────────────────
+  # KAFKA CLUSTER (3-broker KRaft)
+  # ─────────────────────────────────────────────
+
   kafka1:
     image: confluentinc/cp-kafka:7.8.0
     hostname: kafka1
@@ -44,6 +49,12 @@ services:
           cpus: '0.5'
         reservations:
           memory: 256M
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "kafka1:29092"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
 
   kafka2:
     image: confluentinc/cp-kafka:7.8.0
@@ -79,6 +90,12 @@ services:
           cpus: '0.5'
         reservations:
           memory: 256M
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "kafka2:29092"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
 
   kafka3:
     image: confluentinc/cp-kafka:7.8.0
@@ -114,6 +131,16 @@ services:
           cpus: '0.5'
         reservations:
           memory: 256M
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "kafka3:29092"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  # ─────────────────────────────────────────────
+  # SCHEMA REGISTRY
+  # ─────────────────────────────────────────────
 
   schema-registry:
     image: confluentinc/cp-schema-registry:7.8.0
@@ -126,9 +153,12 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka1:29092,PLAINTEXT://kafka2:29092,PLAINTEXT://kafka3:29092'
       SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
     depends_on:
-      - kafka1
-      - kafka2
-      - kafka3
+      kafka1:
+        condition: service_healthy
+      kafka2:
+        condition: service_healthy
+      kafka3:
+        condition: service_healthy
     networks:
       - kafka-net
     deploy:
@@ -138,6 +168,16 @@ services:
           cpus: '0.25'
         reservations:
           memory: 128M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://schema-registry:8081/subjects"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  # ─────────────────────────────────────────────
+  # KAFKA UI
+  # ─────────────────────────────────────────────
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -149,10 +189,8 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1:29092,kafka2:29092,kafka3:29092
       KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:8081
     depends_on:
-      - kafka1
-      - kafka2
-      - kafka3
-      - schema-registry
+      schema-registry:
+        condition: service_healthy
     networks:
       - kafka-net
     deploy:
@@ -162,3 +200,120 @@ services:
           cpus: '0.25'
         reservations:
           memory: 128M
+
+  # ─────────────────────────────────────────────
+  # SPRING BOOT APPS
+  # ─────────────────────────────────────────────
+
+  kafka-producer:
+    build:
+      context: ../kafka-producer/kafka-producer
+      dockerfile_inline: |
+        FROM maven:3.9.6-eclipse-temurin-21 AS build
+        WORKDIR /app
+        COPY pom.xml .
+        RUN mvn dependency:go-offline -q
+        COPY src ./src
+        RUN mvn package -DskipTests -q
+
+        FROM eclipse-temurin:21-jre-jammy
+        WORKDIR /app
+        COPY --from=build /app/target/*.jar app.jar
+        ENTRYPOINT ["java", "-jar", "app.jar"]
+    container_name: kafka-producer
+    networks:
+      - kafka-net
+    ports:
+      - "8083:8083"
+    depends_on:
+      schema-registry:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8083
+      KAFKA_BROKERADDRESS: "kafka1:29092,kafka2:29092,kafka3:29092"
+      KAFKA_SCHEMAREGISTRYADDRESS: "http://schema-registry:8081"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 8
+      start_period: 90s
+
+  kafka-streams:
+    build:
+      context: ../streams
+      dockerfile_inline: |
+        FROM maven:3.9.6-eclipse-temurin-21 AS build
+        WORKDIR /app
+        COPY pom.xml .
+        RUN mvn dependency:go-offline -q
+        COPY src ./src
+        RUN mvn package -DskipTests -q
+
+        FROM eclipse-temurin:21-jre-jammy
+        WORKDIR /app
+        COPY --from=build /app/target/*.jar app.jar
+        ENTRYPOINT ["java", "-jar", "app.jar"]
+    container_name: kafka-streams
+    networks:
+      - kafka-net
+    ports:
+      - "8082:8082"
+    depends_on:
+      kafka-producer:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8082
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka1:29092,kafka2:29092,kafka3:29092"
+      SPRING_KAFKA_STREAMS_PROPERTIES_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+          cpus: '0.75'
+        reservations:
+          memory: 512M
+
+  kafka-consumer:
+    build:
+      context: ../kafka-consumer/kafka-consumer
+      dockerfile_inline: |
+        FROM maven:3.9.6-eclipse-temurin-21 AS build
+        WORKDIR /app
+        COPY pom.xml .
+        RUN mvn dependency:go-offline -q
+        COPY src ./src
+        RUN mvn package -DskipTests -q
+
+        FROM eclipse-temurin:21-jre-jammy
+        WORKDIR /app
+        COPY --from=build /app/target/*.jar app.jar
+        ENTRYPOINT ["java", "-jar", "app.jar"]
+    container_name: kafka-consumer
+    networks:
+      - kafka-net
+    ports:
+      - "8084:8084"
+    depends_on:
+      kafka-streams:
+        condition: service_started
+    environment:
+      SERVER_PORT: 8084
+      KAFKA_BROKERADDRESS: "kafka1:29092,kafka2:29092,kafka3:29092"
+      KAFKA_SCHEMAREGISTRYADDRESS: "http://schema-registry:8081"
+      SPRING_KAFKA_CONSUMER_ENABLE_AUTO_COMMIT: "false"
+      SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET: "earliest"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M

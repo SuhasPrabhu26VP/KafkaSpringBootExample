@@ -1,5 +1,3 @@
-version: '3.8'
-
 networks:
   kafka-net:
     driver: bridge
@@ -209,14 +207,14 @@ services:
     build:
       context: ../kafka-producer/kafka-producer
       dockerfile_inline: |
-        FROM maven:3.9.6-eclipse-temurin-21 AS build
+        FROM maven:3.9.6-eclipse-temurin-17 AS build
         WORKDIR /app
         COPY pom.xml .
         RUN mvn dependency:go-offline -q
         COPY src ./src
         RUN mvn package -DskipTests -q
 
-        FROM eclipse-temurin:21-jre-jammy
+        FROM eclipse-temurin:17-jre-jammy
         WORKDIR /app
         COPY --from=build /app/target/*.jar app.jar
         ENTRYPOINT ["java", "-jar", "app.jar"]
@@ -250,14 +248,14 @@ services:
     build:
       context: ../streams
       dockerfile_inline: |
-        FROM maven:3.9.6-eclipse-temurin-21 AS build
+        FROM maven:3.9.6-eclipse-temurin-17 AS build
         WORKDIR /app
         COPY pom.xml .
         RUN mvn dependency:go-offline -q
         COPY src ./src
         RUN mvn package -DskipTests -q
 
-        FROM eclipse-temurin:21-jre-jammy
+        FROM eclipse-temurin:17-jre-jammy
         WORKDIR /app
         COPY --from=build /app/target/*.jar app.jar
         ENTRYPOINT ["java", "-jar", "app.jar"]
@@ -285,14 +283,14 @@ services:
     build:
       context: ../kafka-consumer/kafka-consumer
       dockerfile_inline: |
-        FROM maven:3.9.6-eclipse-temurin-21 AS build
+        FROM maven:3.9.6-eclipse-temurin-17 AS build
         WORKDIR /app
         COPY pom.xml .
         RUN mvn dependency:go-offline -q
         COPY src ./src
         RUN mvn package -DskipTests -q
 
-        FROM eclipse-temurin:21-jre-jammy
+        FROM eclipse-temurin:17-jre-jammy
         WORKDIR /app
         COPY --from=build /app/target/*.jar app.jar
         ENTRYPOINT ["java", "-jar", "app.jar"]

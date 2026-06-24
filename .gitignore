@@ -1,3 +1,4 @@
 kafka-docker-compose/kafka1/
 kafka-docker-compose/kafka2/
 kafka-docker-compose/kafka3/
+*.txt

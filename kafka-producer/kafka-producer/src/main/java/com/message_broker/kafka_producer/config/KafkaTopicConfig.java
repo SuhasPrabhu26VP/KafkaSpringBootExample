@@ -9,9 +9,9 @@ import org.springframework.kafka.core.KafkaAdmin;
 
 import java.util.HashMap;
 import java.util.Map;
-
 @Configuration
 public class KafkaTopicConfig {
+
     @Value("${kafka.brokerAddress}")
     private String brokerAddress;
 
@@ -33,12 +33,35 @@ public class KafkaTopicConfig {
     @Value("${kafka.topics.message.name}")
     private String messageTopicName;
 
+    @Value("${kafka.topics.temp.name}")
+    private String tempTopicName;
+
+    @Value("${kafka.cloud.clusterApiKey:}")
+    private String clusterApiKey;
+
+    @Value("${kafka.cloud.clusterApiSecret:}")
+    private String clusterApiSecret;
+
     @Bean
     public KafkaAdmin kafkaAdmin() {
         Map<String, Object> configs = new HashMap<>();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, brokerAddress);
-        return new KafkaAdmin(configs);
+
+        if (clusterApiKey != null && !clusterApiKey.isBlank()) {
+            configs.put("security.protocol", "SASL_SSL");
+            configs.put("sasl.mechanism", "PLAIN");
+            configs.put("sasl.jaas.config",
+                    "org.apache.kafka.common.security.plain.PlainLoginModule required " +
+                            "username=\"" + clusterApiKey + "\" " +
+                            "password=\"" + clusterApiSecret + "\";");
+        }
+
+        KafkaAdmin admin = new KafkaAdmin(configs);
+        admin.setAutoCreate(true);
+        return admin;
     }
+
+
 
     @Bean
     public NewTopic userTopic() {
@@ -84,7 +107,13 @@ public class KafkaTopicConfig {
         return new NewTopic(messageTopicName, 1, (short) 3);
     }
 
-    // DLQ topics
+    @Bean
+    public NewTopic tempTopic() {
+        return new NewTopic(tempTopicName, 3, (short) 3);
+    }
+
+
+
     @Bean
     public NewTopic userDlqTopic() {
         return new NewTopic(userTopicName + ".DLT", 4, (short) 3)

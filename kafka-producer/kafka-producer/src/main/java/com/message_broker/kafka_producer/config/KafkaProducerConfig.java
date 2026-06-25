@@ -24,28 +24,68 @@ import java.util.Map;
 @Configuration
 @EnableTransactionManagement
 public class KafkaProducerConfig {
+
     @Value("${kafka.brokerAddress}")
     private String brokerAddress;
 
     @Value("${kafka.schemaRegistryAddress}")
     private String schemaRegistryAddress;
 
+    @Value("${kafka.cloud.clusterApiKey:}")
+    private String clusterApiKey;
+
+    @Value("${kafka.cloud.clusterApiSecret:}")
+    private String clusterApiSecret;
+
+    @Value("${kafka.cloud.srApiKey:}")
+    private String srApiKey;
+
+    @Value("${kafka.cloud.srApiSecret:}")
+    private String srApiSecret;
+
+
+    private Map<String, Object> createDefaultProps() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerAddress);
+        props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+        props.put(ProducerConfig.ACKS_CONFIG, "all");
+        props.put(ProducerConfig.RETRIES_CONFIG, Integer.MAX_VALUE);
+        props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
+
+        if (clusterApiKey != null && !clusterApiKey.isBlank()) {
+            props.put("security.protocol", "SASL_SSL");
+            props.put("sasl.mechanism", "PLAIN");
+            props.put("sasl.jaas.config",
+                    "org.apache.kafka.common.security.plain.PlainLoginModule required " +
+                            "username=\"" + clusterApiKey + "\" " +
+                            "password=\"" + clusterApiSecret + "\";");
+        }
+
+        return props;
+    }
+
+    private void addSchemaRegistryProps(Map<String, Object> props) {
+        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
+        props.put(AbstractKafkaSchemaSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY,
+                RecordNameStrategy.class.getName());
+
+        if (srApiKey != null && !srApiKey.isBlank()) {
+            props.put("basic.auth.credentials.source", "USER_INFO");
+            props.put("basic.auth.user.info", srApiKey + ":" + srApiSecret);
+        }
+    }
 
 
     @Bean
     public ProducerFactory<String, schema.avro.AvroUser> userProducerFactory() {
         Map<String, Object> props = createDefaultProps();
-        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
+        addSchemaRegistryProps(props);                                          // ← replaces the two SR lines you had
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
-        props.put(AbstractKafkaSchemaSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY,
-                RecordNameStrategy.class.getName());
-        //custom partitioner or any props should be defined first any modification factory properties will not be considered post factory initialization
         props.put(ProducerConfig.PARTITIONER_CLASS_CONFIG,
                 "com.message_broker.kafka_producer.partitioner.DepartmentPartitioner");
         DefaultKafkaProducerFactory<String, schema.avro.AvroUser> factory =
                 new DefaultKafkaProducerFactory<>(props);
-
         factory.setTransactionIdPrefix("user-tx-");
         return factory;
     }
@@ -61,17 +101,13 @@ public class KafkaProducerConfig {
     @Bean
     public ProducerFactory<String, schema.avro.AvroUser> userChangeLogProducerFactory() {
         Map<String, Object> props = createDefaultProps();
-        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
+        addSchemaRegistryProps(props);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
-        props.put(AbstractKafkaSchemaSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY,
-                RecordNameStrategy.class.getName());
-        //custom partitioner or any props should be defined first any modification factory properties will not be considered post factory initialization
         props.put(ProducerConfig.PARTITIONER_CLASS_CONFIG,
                 "com.message_broker.kafka_producer.partitioner.DepartmentPartitioner");
         DefaultKafkaProducerFactory<String, schema.avro.AvroUser> factory =
                 new DefaultKafkaProducerFactory<>(props);
-
         factory.setTransactionIdPrefix("user-changelog-tx-");
         return factory;
     }
@@ -84,24 +120,21 @@ public class KafkaProducerConfig {
         return template;
     }
 
-
     @Primary
     @Bean
     public PlatformTransactionManager userTransactionManager(
             ProducerFactory<String, schema.avro.AvroUser> userProducerFactory) {
         return new KafkaTransactionManager<>(userProducerFactory);
     }
+
     @Bean
     public ProducerFactory<String, schema.avro.AvroCompany> companyProducerFactory() {
         Map<String, Object> props = createDefaultProps();
-        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
+        addSchemaRegistryProps(props);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
-        props.put(AbstractKafkaSchemaSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY,
-                RecordNameStrategy.class.getName());
         DefaultKafkaProducerFactory<String, schema.avro.AvroCompany> factory =
                 new DefaultKafkaProducerFactory<>(props);
-
         factory.setTransactionIdPrefix("company-tx-");
         return factory;
     }
@@ -117,14 +150,11 @@ public class KafkaProducerConfig {
     @Bean
     public ProducerFactory<String, schema.avro.AvroCompany> globalCompanyProducerFactory() {
         Map<String, Object> props = createDefaultProps();
-        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
+        addSchemaRegistryProps(props);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
-        props.put(AbstractKafkaSchemaSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY,
-                RecordNameStrategy.class.getName());
         DefaultKafkaProducerFactory<String, schema.avro.AvroCompany> factory =
                 new DefaultKafkaProducerFactory<>(props);
-
         factory.setTransactionIdPrefix("global-company-tx-");
         return factory;
     }
@@ -140,14 +170,11 @@ public class KafkaProducerConfig {
     @Bean
     public ProducerFactory<String, schema.avro.AvroCompany> companyChangeLogProducerFactory() {
         Map<String, Object> props = createDefaultProps();
-        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
+        addSchemaRegistryProps(props);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
-        props.put(AbstractKafkaSchemaSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY,
-                RecordNameStrategy.class.getName());
         DefaultKafkaProducerFactory<String, schema.avro.AvroCompany> factory =
                 new DefaultKafkaProducerFactory<>(props);
-
         factory.setTransactionIdPrefix("company-changelog-tx-");
         return factory;
     }
@@ -159,6 +186,7 @@ public class KafkaProducerConfig {
         template.setTransactionIdPrefix("company-changelog-tx-");
         return template;
     }
+
     @Bean
     public PlatformTransactionManager companyTransactionManager(
             ProducerFactory<String, schema.avro.AvroCompany> companyProducerFactory) {
@@ -168,43 +196,27 @@ public class KafkaProducerConfig {
     @Bean
     public ProducerFactory<String, String> messageIdProducerFactory() {
         Map<String, Object> props = createDefaultProps();
-
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-
-        DefaultKafkaProducerFactory<String, String> factory =
-                new DefaultKafkaProducerFactory<>(props);
-        //factory.setTransactionIdPrefix("message-tx-");
-        return factory;
+        return new DefaultKafkaProducerFactory<>(props);
     }
 
     @Bean
     public KafkaTemplate<String, String> messageIdKafkaTemplate() {
-        return new KafkaTemplate<String, String>(messageIdProducerFactory());
+        return new KafkaTemplate<>(messageIdProducerFactory());
     }
 
     @Bean
     public ProducerFactory<String, AvroTemperatureSensor> tempProducerFactory() {
         Map<String, Object> props = createDefaultProps();
-        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryAddress);
+        addSchemaRegistryProps(props);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
-        props.put(AbstractKafkaSchemaSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY,
-                RecordNameStrategy.class.getName());
         return new DefaultKafkaProducerFactory<>(props);
     }
+
     @Bean
     public KafkaTemplate<String, AvroTemperatureSensor> tempKafkaTemplate() {
-        return new KafkaTemplate<String, AvroTemperatureSensor>(tempProducerFactory());
-    }
-
-    private Map<String, Object> createDefaultProps() {
-        Map<String, Object> props = new HashMap<>();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerAddress);
-        props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
-        props.put(ProducerConfig.ACKS_CONFIG, "all");
-        props.put(ProducerConfig.RETRIES_CONFIG, Integer.MAX_VALUE);
-        props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
-        return props;
+        return new KafkaTemplate<>(tempProducerFactory());
     }
 }

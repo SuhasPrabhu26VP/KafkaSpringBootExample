@@ -1,0 +1,8 @@
+kafka:
+  brokerAddress: <BOOTSTRAP_SERVER>:9092
+  schemaRegistryAddress: https://<SCHEMA_REGISTRY_ENDPOINT>
+  cloud:
+    clusterApiKey: ${CONFLUENT_CLUSTER_KEY}
+    clusterApiSecret: ${CONFLUENT_CLUSTER_SECRET}
+    srApiKey: ${CONFLUENT_SR_KEY}
+    srApiSecret: ${CONFLUENT_SR_SECRET}
